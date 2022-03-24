@@ -674,6 +674,9 @@ select {
 .w-5 {
   width: 1.25rem;
 }
+.w-24 {
+  width: 6rem;
+}
 .max-w-max {
   max-width: -webkit-max-content;
   max-width: -moz-max-content;
@@ -759,6 +762,10 @@ select {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .object-cover {
   -o-object-fit: cover;

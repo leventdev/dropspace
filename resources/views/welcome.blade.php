@@ -33,12 +33,12 @@
         <div class="max-w-max mx-auto">
             <main class="sm:flex">
                 <div data-aos="fade-right" class="md:shadow sm:shadow-none sm:bg-none rounded-lg  md:bg-gradient-to-r md:from-indigo-500 md:to-blue-500 h-full">
-                    <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="p-5 h-26 w-96 object-cover">
+                    <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="p-5 h-26 w-96 object-contain">
                 </div>
                 <form method="POST" action="{{url('file/upload-file')}}" enctype="multipart/form-data">
                     @csrf
-                    <div class="sm:ml-6 self-center">
-                        <div class="sm:border-l sm:border-gray-200 sm:pl-6">
+                    <div class="sm:ml-6 self-center sm:border-l sm:border-gray-200 sm:pl-6">
+                        <div>
                             <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
                                 <input required onchange="this.form.submit()" type="file" name="file" id="fileid" hidden />
                                 <button type="button" id="buttonid" class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
