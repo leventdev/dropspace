@@ -3,14 +3,24 @@
 <!-- 
     Insert tags, badges, etc... here
 -->
+
 # DropSpace
+
 ### Simple file sharing made in Laravel
+
 ## About DropSpace
 
 DropSapce is an easy way to self-host a file drop. Simply upload your file, and share the link. That's all!
 DropSpace is built using [Laravel](https://laravel.com).
 
 # Features
+
+| Feature                 | Status |
+| ----------------------- | ------ |
+| File upload (max 100mb) |        |
+| File upload (chunked)   |        |
+| File                    |        |
+
 <!-- list features todo -->
 
 ## Contributing
