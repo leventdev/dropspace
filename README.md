@@ -19,7 +19,7 @@ DropSpace is in development, please make sure to read the [Contributing Guide](C
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within DropSpace, please make a pull request and use the `secuirty vulnerability` tag.
+If you discover a security vulnerability within DropSpace, please make a pull request and use the `security  vulnerability` tag.
 All security vulnerabilities will be promptly addressed.
 
 ## License
