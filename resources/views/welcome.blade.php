@@ -35,7 +35,7 @@
                 <div data-aos="fade-right" class="md:shadow sm:shadow-none sm:bg-none rounded-lg  md:bg-gradient-to-r md:from-indigo-500 md:to-blue-500 h-full">
                     <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="p-5 h-26 w-96 object-contain">
                 </div>
-                <form method="POST" action="{{url('file/upload-file')}}" enctype="multipart/form-data">
+                <form method="POST" action="{{url('upload-file')}}" enctype="multipart/form-data">
                     @csrf
                     <div class="sm:ml-6 self-center sm:border-l sm:border-gray-200 sm:pl-6">
                         <div>
