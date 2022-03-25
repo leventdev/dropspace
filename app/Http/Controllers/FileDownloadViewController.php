@@ -7,6 +7,8 @@ use App\Models\File;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\SendFileShare;
+use Illuminate\Support\Facades\Mail;
 
 class FileDownloadViewController extends Controller
 {
@@ -18,6 +20,11 @@ class FileDownloadViewController extends Controller
         $filename = $file->name . '.' . $file->extension;
         $url = url('/file/download/' . $fileid . '?hash=' . $request->hash);
         Mail::to($email)->send(new \App\Mail\sendFileShare($url, $filename));*/
+        $fileid = request()->file_id;
+        $email = request()->email;
+        $file = File::where('file_identifier', $fileid)->first();
+        $url = secure_url('/download/' . $file->file_identifier.'?hash='.$file->password);
+        Mail::to($email)->send(new SendFileShare($url, $file->name));
     }
 
     public function returnFile($file_id)

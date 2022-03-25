@@ -9,8 +9,10 @@
 
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="<?php
-    use App\Http\Controllers\FileController;
-    echo asset('css/app.css') ?>" type="text/css">
+
+                                    use App\Http\Controllers\FileController;
+
+                                    echo asset('css/app.css') ?>" type="text/css">
     <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
@@ -35,32 +37,35 @@
 <body class="h-full">
     <style>
         .button--loading .button__text {
-  visibility: hidden;
-  opacity: 0;
-}
-.button--loading::after {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  top: 0;
-  left: 0;
-  right: 6px;
-  bottom: 0;
-  margin: auto;
-  border: 3px solid transparent;
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: button-loading-spinner 0.8s ease infinite;
-}
-@keyframes button-loading-spinner {
-  from {
-    transform: rotate(0turn);
-  }
-  to {
-    transform: rotate(1turn);
-  }
-}
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .button--loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 0;
+            left: 0;
+            right: 6px;
+            bottom: 0;
+            margin: auto;
+            border: 3px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 0.8s ease infinite;
+        }
+
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+
+            to {
+                transform: rotate(1turn);
+            }
+        }
     </style>
     <div class="bg-gray-800 min-h-full px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
         <div class="max-w-max mx-auto">
@@ -100,7 +105,7 @@
                         </div>
                     </div>
                 </div>
-                <form id="send-mail-file" type="post" action="{{url('send-mail-file')}}">
+                <form id="send-mail-file" type="post" action="{{secure_url('send-mail-file')}}">
                     @csrf
                     <input type="hidden" name="file_id" value="{{ $fileID }}">
                     <input type="hidden" id="send-mail-file-email" name="email">
@@ -126,8 +131,8 @@
         const toemail = document.getElementById('sharemail').value;
         const fileId = "{{ $fileShareURL }}";
         //post call to {{url('send-mail-file')}} with email and file_id
-        const Url="{{secure_url('send-mail-file')}}";
-        const data={
+        const Url = "{{secure_url('send-mail-file')}}";
+        const data = {
             file_id: "{{ $fileID }}",
             email: toemail,
             _token: "{{ csrf_token() }}",
@@ -135,14 +140,15 @@
             hash: "{{ $hash }}"
             @endif
         }
-        $.post(Url,data, function(data, status){
+        $.post(Url, data, function(data, status) {
             btn.classList.remove("button--loading");
             btn.classList.add("text-gray-200");
-        btn.classList.add("bg-green-500");
-        btn.classList.add("hover:bg-green-400");
-        btn.innerText = "Sent";
+            btn.classList.add("bg-green-500");
+            btn.classList.add("hover:bg-green-400");
+            btn.innerText = "Sent";
         });
     }
+
     function copyText() {
         var copyText = document.getElementById("share");
         /* Select the text field */
@@ -151,31 +157,31 @@
         /* Copy the text inside the text field */
 
         //copy value of element with share id to the users clipboard
-        navigator.clipboard.writeText(copyText.value).then(function(){
+        navigator.clipboard.writeText(copyText.value).then(function() {
             /* Alert the copied text */
-        var copyButton = document.getElementById("copy-button");
-        copyButton.innerHTML = "Copied!";
-        //remove style text-gray-400
-        copyButton.classList.remove("text-gray-400");
-        copyButton.classList.remove("hover:bg-gray-100");
-        //add style text-gray-200
-        copyButton.classList.add("text-gray-200");
-        copyButton.classList.add("bg-green-500");
-        copyButton.classList.add("hover:bg-green-400");
-        }, function(){
+            var copyButton = document.getElementById("copy-button");
+            copyButton.innerHTML = "Copied!";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-green-500");
+            copyButton.classList.add("hover:bg-green-400");
+        }, function() {
             /* Alert the copied text */
-        var copyButton = document.getElementById("copy-button");
-        copyButton.innerHTML = "Failed";
-        //remove style text-gray-400
-        copyButton.classList.remove("text-gray-400");
-        copyButton.classList.remove("hover:bg-gray-100");
-        //add style text-gray-200
-        copyButton.classList.add("text-gray-200");
-        copyButton.classList.add("bg-red-500");
-        copyButton.classList.add("hover:bg-red-400");
+            var copyButton = document.getElementById("copy-button");
+            copyButton.innerHTML = "Failed";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-red-500");
+            copyButton.classList.add("hover:bg-red-400");
         });
-        
-        
+
+
     }
 </script>
 
