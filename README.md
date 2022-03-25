@@ -10,7 +10,7 @@
 
 ## About DropSpace
 
-DropSpace is an easy way to self-host a file drop. Simply upload your file, and share the link. That's all!
+DropSpace is an easy way to self-host a file drop. Simply upload your file, and share the link. That's all!  
 DropSpace is built using [Laravel](https://laravel.com).
 
 # Features
