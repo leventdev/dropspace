@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Storage;
 class FileDownloadViewController extends Controller
 {
     //
+    public function sendMail(){
+        /*$fileid = $request->file_id;
+        $email = $request->email;
+        $file = DB::table('files')->where('file_identifier', $fileid)->first();
+        $filename = $file->name . '.' . $file->extension;
+        $url = url('/file/download/' . $fileid . '?hash=' . $request->hash);
+        Mail::to($email)->send(new \App\Mail\sendFileShare($url, $filename));*/
+    }
+
     public function returnFile($file_id)
     {
         try {
@@ -25,9 +34,9 @@ class FileDownloadViewController extends Controller
                     //Check if the file is protected
                     if ($file->is_protected == 1) {
                         //If the file is protected, check if the request has a hash
-                        if (request()->has('hash')) {
+                        if (request()->has('hash') || request()->has('password')) {
                             //If the request has a hash, check if the hash is correct
-                            if ($file->password == request()->hash) {
+                            if ($file->password == request()->hash||$file->password == sha1(request()->password)) {
                                 //If the hash is correct, return the download view
                                 $downloadURL = secure_url('/download-file/' . $file->file_identifier.'?hash='.$file->password);
                                 //File's name without extension
@@ -35,12 +44,20 @@ class FileDownloadViewController extends Controller
                                 return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => true, 'hash' => $file->password]);
                             } else {
                                 //If the hash is incorrect, return the download error view
-                                return view('download-error', ['error' => 'An error occured with the authorization hash of this download. Please try again or contact the admin.']);
+                                if(request()->has('hash')){
+                                    return view('download-error', ['error' => 'An error occured with the authorization hash of this download. Please try again or contact the admin.']);
+                                }else{
+
+                                    if(request()->has('password')){
+                                        return view('password', ['fileURL' => secure_url('/download/'.$file->file_identifier)]);
+                                    }else{
+                                        return view('download-error', ['error' => 'An error occured with the authorization of the password or the hash of this download. please try again or contact the admin.']);
+                                    }
+                                }
                             }
                         }else{
                             //File is protected but a hash hasnt been provided, check for password
-                            
-                            return view('download-error', ['error' => 'No pass provided']);
+                            return view('password', ['fileURL' => secure_url('/download/'.$file->file_identifier)]);
                         }
                     } else {
                         //If the file is not protected, the download view is returned
