@@ -5,26 +5,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Download | LeventdevAPI</title>
+    <title>Download | DropSpace</title>
 
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="<?php echo asset('css/app.css') ?>" type="text/css">
 
     <!-- Primary Meta Tags -->
-    <meta name="title" content="Download | LeventdevAPI">
-    <meta name="description" content="Download a password protected file from LeventdevAPI file share">
+    <meta name="title" content="Download | DropSpace">
+    <meta name="description" content="Download a password protected file from DropSpace file share">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url('/')}}">
-    <meta property="og:title" content="Download | LeventdevAPI">
-    <meta property="og:description" content="Download a password protected file from LeventdevAPI file share">
+    <meta property="og:url" content="{{ $fileURL }}">
+    <meta property="og:title" content="Download | DropSpace">
+    <meta property="og:description" content="Download a password protected file from DropSpace file share">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ url('/')}}">
-    <meta property="twitter:title" content="Download | LeventdevAPI">
-    <meta property="twitter:description" content="Download a password protected file from LeventdevAPI file share">
+    <meta property="twitter:url" content="{{ $fileURL )}}">
+    <meta property="twitter:title" content="Download | DropSpace">
+    <meta property="twitter:description" content="Download a password protected file from DropSpace file share">
 </head>
 
 <body class="h-full">

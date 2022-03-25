@@ -5,27 +5,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Upload | LeventdevAPI</title>
+    <title>Upload | DropSpace</title>
 
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="<?php echo asset('css/app.css') ?>" type="text/css">
     <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}" />
 
     <!-- Primary Meta Tags -->
-    <meta name="title" content="Upload | LeventdevAPI">
-    <meta name="description" content="LeventdevAPI file upload">
+    <meta name="title" content="Upload | DropSpace">
+    <meta name="description" content="DropSpace file upload">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://leventdev.me/file/upload">
-    <meta property="og:title" content="Upload | LeventdevAPI">
-    <meta property="og:description" content="LeventdevAPI file upload">
+    <meta property="og:url" content="{{ secure_url('/')}}">
+    <meta property="og:title" content="Upload | DropSpace">
+    <meta property="og:description" content="DropSpace file upload">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://leventdev.me/file/upload">
-    <meta property="twitter:title" content="Upload | LeventdevAPI">
-    <meta property="twitter:description" content="LeventdevAPI file upload">
+    <meta property="twitter:url" content="htt{{ secure_url('/')}}">
+    <meta property="twitter:title" content="Upload | DropSpace">
+    <meta property="twitter:description" content="DropSpace file upload">
 </head>
 
 <body class="h-full">

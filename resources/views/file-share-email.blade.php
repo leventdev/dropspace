@@ -157,7 +157,7 @@
                                             <div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;line-height:1.5;padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;">
                                                 <div style="line-height: 1.5; font-size: 12px; color: #ffffff; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px;">
                                                     <p style="font-size: 14px; line-height: 1.5; word-break: break-word; text-align: center; mso-line-height-alt: 21px; margin: 0;">
-                                                        <strong><span style="font-size: 30px;"><img src="https://drop.leventdev.me/dropspace-white.png" width="350" height="74" alt="DropSpace" title="DropSpace" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 350px; display: center;"/></span></strong>
+                                                        <strong><span style="font-size: 30px;"><img src="{{asset('dropspace-white.png')}}" width="350" height="74" alt="DropSpace" title="DropSpace" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 350px; display: center;"/></span></strong>
                                                     </p>
                                                 </div>
                                             </div>
@@ -193,7 +193,7 @@
                                         <div style="border-top:0px solid transparent; border-left:0px solid transparent; border-bottom:0px solid transparent; border-right:0px solid transparent; padding-top:5px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;">
                                             <!--<![endif]-->
                                             <div align="center" class="img-container center autowidth" style="padding-right: 0px;padding-left: 0px;">
-                                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><img align="center" alt="Alternate text" border="0" class="center autowidth" src="https://leventdev.me/img/round_corner.png" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 680px; display: block;" title="" width="680" />
+                                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 0px;padding-left: 0px;" align="center"><![endif]--><img align="center" alt="Alternate text" border="0" class="center autowidth" src="{{asset('round_corner.png')}}" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 680px; display: block;" title="" width="680" />
                                                 <!--[if mso]></td></tr></table><![endif]-->
                                             </div>
                                             <!--[if (!mso)&(!IE)]><!-->
@@ -331,7 +331,7 @@
                                                         style="font-size: 14px; line-height: 1.2; word-break: break-word; mso-line-height-alt: 17px; margin: 0;">
                                                         <a href="https://github.com/leventdev/dropspace" rel="noopener"
                                                             style="text-decoration: underline; color: #999;"
-                                                            target="_blank">DropSpace</a>
+                                                            target="_blank">DropSpace on GitHub</a>
                                                     </p>
                                                 </div>
                                             </div>
