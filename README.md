@@ -17,20 +17,20 @@ DropSpace is built using [Laravel](https://laravel.com).
 
 | Feature                 | Status |
 | ----------------------- | ------ |
-| File upload (max 100mb) |        |
-| File upload (chunked)   |        |
-| File                    |        |
+| File upload (max 100mb (with CloudFlare)) |     :white_check_mark:    |
+| File upload (chunked (custom limit))   | :x: |
+| File sharing in email   |        :white_check_mark: |
+| File protection   |        :white_check_mark: |
+| File download via curl (click-to-copy command)   | :x: |
+| File upload via CLI   | :x: |
+
 
 <!-- list features todo -->
 
-## Contributing
-
-DropSpace is in development, please make sure to read the [Contributing Guide](CONTRIBUTING.md) before making a pull request.
 
 ## Security Vulnerabilities
 
 If you discover a security vulnerability within DropSpace, please make a pull request and use the `security  vulnerability` tag.
-All security vulnerabilities will be promptly addressed.
 
 ## License
 
