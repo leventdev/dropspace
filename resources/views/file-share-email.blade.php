@@ -157,7 +157,7 @@
                                             <div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;line-height:1.5;padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;">
                                                 <div style="line-height: 1.5; font-size: 12px; color: #ffffff; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px;">
                                                     <p style="font-size: 14px; line-height: 1.5; word-break: break-word; text-align: center; mso-line-height-alt: 21px; margin: 0;">
-                                                        <strong><span style="font-size: 30px;"><img src="{{asset('dropspace-white.svg')}}" style="max-width: 350px;"/></span></strong>
+                                                        <strong><span style="font-size: 30px;"><img src="https://drop.leventdev.me/dropspace-white.svg" style="max-width: 350px;"/></span></strong>
                                                     </p>
                                                 </div>
                                             </div>
