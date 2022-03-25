@@ -157,7 +157,7 @@
                                             <div style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;line-height:1.5;padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;">
                                                 <div style="line-height: 1.5; font-size: 12px; color: #ffffff; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px;">
                                                     <p style="font-size: 14px; line-height: 1.5; word-break: break-word; text-align: center; mso-line-height-alt: 21px; margin: 0;">
-                                                        <strong><span style="font-size: 30px;"><img src="https://drop.leventdev.me/dropspace-white.png" width="350" height="74" alt="DropSpace" title="DropSpace" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 350px; display: block;"/></span></strong>
+                                                        <strong><span style="font-size: 30px;"><img src="https://drop.leventdev.me/dropspace-white.png" width="350" height="74" alt="DropSpace" title="DropSpace" style="text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: 0; width: 100%; max-width: 350px; display: center;"/></span></strong>
                                                     </p>
                                                 </div>
                                             </div>
@@ -247,7 +247,7 @@
                                                     </p>
                                                     <div align="center" class="button-container"
                                                 style="padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:35px;">
-                                                <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 35px" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://portal.pupilpay.hu" style="height:31.5pt; width:201.75pt; v-text-anchor:middle;" arcsize="10%" stroke="false" fillcolor="#00ba94"><w:anchorlock/><v:textbox inset="0,0,0,0"><center style="color:#ffffff; font-family:Tahoma, sans-serif; font-size:16px"><![endif]--><a
+                                                <a
                                                 href="{{$url ?? 'secure_url('/')'}}"
                                                     style="-webkit-text-size-adjust: none; text-decoration: none; display: inline-block; color: #ffffff; background-color: #484d57; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width: auto; width: auto; border-top: 0px solid #E17370; border-right: 0px solid #E17370; border-bottom: 0px solid #E17370; border-left: 0px solid #E17370; padding-top: 5px; padding-bottom: 5px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; text-align: center; mso-border-alt: none; word-break: keep-all;"
                                                     target="_blank"><span
