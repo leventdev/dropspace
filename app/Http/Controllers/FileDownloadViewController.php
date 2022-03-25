@@ -3,8 +3,63 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\File;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class FileDownloadViewController extends Controller
 {
     //
+    public function returnFile($file_id)
+    {
+        try {
+
+            //This function returns the download view of a file
+            //Check if the file exists in the database based on the file_id 
+            if (File::where('file_identifier', $file_id)->exists()) {
+                //Load file data into $file
+                $file = File::where('file_identifier', $file_id)->first();
+                //Check if file is saved in storage
+                if (Storage::exists('dropspace/uploads/' . $file->path)) {
+                    //Check if the file is protected
+                    if ($file->is_protected == 1) {
+                        //If the file is protected, check if the request has a hash
+                        if (request()->has('hash')) {
+                            //If the request has a hash, check if the hash is correct
+                            if ($file->password == request()->hash) {
+                                //If the hash is correct, return the download view
+                                $downloadURL = secure_url('/download-file/' . $file->file_identifier.'?hash='.$file->password);
+                                //File's name without extension
+                                $shortName = str_replace('.' . $file->extension, '', $file->name);
+                                return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => true, 'hash' => $file->password]);
+                            } else {
+                                //If the hash is incorrect, return the download error view
+                                return view('download-error', ['error' => 'An error occured with the authorization hash of this download. Please try again or contact the admin.']);
+                            }
+                        }else{
+                            //File is protected but a hash hasnt been provided, check for password
+                            
+                            return view('download-error', ['error' => 'No pass provided']);
+                        }
+                    } else {
+                        //If the file is not protected, the download view is returned
+                        $downloadURL = secure_url('/download-file/' . $file->file_identifier);
+                        //File's name without extension
+                        $shortName = str_replace('.' . $file->extension, '', $file->name);
+                        return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => false]);
+                    }
+                } else {
+                    //If file is not saved in storage, return error page
+                    return view('download-error', ['error' => 'The file you are trying to download does not exist.']);
+                }
+            } else {
+                //If the file does not exist, the user is redirected to an error page
+                return view('download-error', ['error' => 'The file you are trying to download does not exist.']);
+            }
+        } catch (Exception $e) {
+            //If an error occurs, the user is redirected to an error page
+            return view('download-error', ['error' => $e->getMessage() . '. Contact admin.']);
+        }
+    }
 }
