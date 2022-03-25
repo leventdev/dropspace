@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('extension');
             $table->string('size');
-            $table->string('upload_date');
             $table->string('uploader_ip');
             $table->boolean('is_protected')->default(false);
             $table->string('password', 255)->nullable();
