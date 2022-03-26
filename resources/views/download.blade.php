@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="<?php
 
                                     use App\Http\Controllers\FileController;
+use NunoMaduro\Collision\Adapters\Phpunit\Style;
 
                                     echo asset('css/app.css') ?>" type="text/css">
     <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}" />
@@ -36,21 +37,44 @@
 
 <body class="h-full">
     <style>
+.danger-shake {
+  /* Start the shake animation and make the animation last for 0.5 seconds */
+  animation: shake 3.5s; 
 
-@keyframes rotate {
-    from { 
-        
-    }
-    to   { 
+  /* When the animation is finished, start again */
+  animation-iteration-count: infinite;
 
-    }
+}
+
+@keyframes shake {
+  2% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  4% { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
+  6% { transform: translate(-0.5px, 0px) rotate(1deg); }
+  8% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  10% { transform: translate(0.5px, -0.5px) rotate(1deg); }
+  12% { transform: translate(-0.5px, 0px) rotate(-1deg); }
+  14% { transform: translate(-0.5px, 0.5px) rotate(0deg); }
+  16% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  18% { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
+  20% { transform: translate(-0.5px, 0px) rotate(1deg); }
+  22% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  24% { transform: translate(0.5px, -0.5px) rotate(1deg); }
+  26% { transform: translate(-0.5px, 0px) rotate(-1deg); }
+  28% { transform: translate(-0.5px, 0.5px) rotate(0deg); }
+  30% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  32% { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
+  34% { transform: translate(-0.5px, 0px) rotate(1deg); }
+  36% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  40% { transform: translate(0.5px, -0.5px) rotate(1deg); }
+  42% { transform: translate(-0.5px, 0px) rotate(-1deg); }
+  44% { transform: translate(-0.5px, 0.5px) rotate(0deg); }
+  45% { transform: translate(0px, 0.5px) rotate(0deg); }
+  46% { transform: translate(0px, 0px) rotate(0deg); }
+  100% { transform: translate(0px, 0px) rotate(0deg); }
 }
 
 .spinning-gradient {
-    animation: rotate 2s linear infinite;
-    background-repeat: repeat-x;
-    background-position: 0px 0px;
-
+    background-image: linear-gradient(0deg, #6366f1, #3b82f6);
 }
 
         .button--loading .button__text {
@@ -109,15 +133,15 @@
                             <div class="pt-5 sm:block">
                                 <nav class="flex space-x-0 items-center" aria-label="Tabs">
                                     <?php if($expiryType == 'both'){ ?>
-                                    <a  class="spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                    <a id="spin-download" class="<?php if($downloadInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
                                     <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> or </a>
-                                    <a  class="spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                    <a  id="spin-date" class="<?php if($dateInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
                                     <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
                                     <?php }elseif($expiryType == 'download'){ ?>
-                                        <a  class="spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                        <a id="spin-download" class="<?php if($downloadInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
                                     <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
                                     <?php }elseif($expiryType == 'date'){ ?>
-                                    <a  class="spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                    <a  id="spin-date" class="<?php if($dateInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
                                     <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
                                     <?php } ?>
                                 </nav>
@@ -152,6 +176,22 @@
     </script>
 </body>
 <script>
+    var angle = 0;
+
+var pill_download_limit = $('#spin-download');
+var pill_date_expiry = $('#spin-date');
+
+function changeAngle() {
+    angle = (angle + 5) % 360;
+    pill_download_limit.css({
+        'background': '-webkit-linear-gradient(' + angle + 'deg,{{ $color1download}}, {{ $color2download}})',
+    });
+    pill_date_expiry.css({
+        'background': '-webkit-linear-gradient(' + angle + 'deg,{{ $color2date}}, {{ $color1date}})',
+    });
+}
+    setInterval(changeAngle, 50);
+
     function sendEmail() {
         const btn = document.getElementById('send-button');
         btn.classList.add("button--loading");
