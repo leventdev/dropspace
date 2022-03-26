@@ -51,23 +51,6 @@
                                 </input>
                             </div>
                         </div>
-                        <div>
-                            <div class="mt-4 relative flex items-center">
-                                <div class="bg-gray-50 p-3 rounded-md grid grid-rows-1">
-                                    <span class="flex flex-col row-span-1 row-end-1">
-                                        <span class="text-sm font-medium text-gray-900" id="availability-label">Password protect</span>
-                                        <span class="text-sm text-gray-500" id="availability-description">A password will be needed to download.</span>
-                                    </span>
-                                    <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
-                                    <input type="hidden" value="false" name="passbool" id="passwordtoggle" />
-                                    <button onclick="togglePassword()" type="button" id="passwordbutton" class="row-span-1 row-end-1 ml-4 bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" role="switch" aria-checked="false" aria-labelledby="availability-label" aria-describedby="availability-description">
-                                        <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
-                                        <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
-                                    </button>
-                                    <input type="password" onsubmit="" name="password" id="passwordbox" value="" readonly placeholder="**********" class="mt-2 row-end-2 col-span-2 relative items-center shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </form>
             </main>
@@ -83,7 +66,7 @@
         document.getElementById('fileid').click();
     });
 
-    function togglePassword() {
+    /*function togglePassword() {
         const passwordtoggle = document.getElementById('passwordtoggle');
         const passwordbutton = document.getElementById('passwordbutton');
         if (passwordtoggle.value == "false") {
@@ -107,7 +90,7 @@
             passwordbutton.children[0].classList.add("translate-x-0");
             passwordbutton.children[0].classList.remove("translate-x-5");
         }
-    }
+    }*/
 </script>
 
 </html>

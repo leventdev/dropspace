@@ -17,5 +17,9 @@ class File extends Model
         'uploader_ip',
         'is_protected',
         'password',
+        'download_limit',
+        'download_count',
+        'expiry_date',
+        'finished_uploading',
     ];
 }

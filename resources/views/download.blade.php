@@ -36,6 +36,23 @@
 
 <body class="h-full">
     <style>
+
+@keyframes rotate {
+    from { 
+        
+    }
+    to   { 
+
+    }
+}
+
+.spinning-gradient {
+    animation: rotate 2s linear infinite;
+    background-repeat: repeat-x;
+    background-position: 0px 0px;
+
+}
+
         .button--loading .button__text {
             visibility: hidden;
             opacity: 0;
@@ -88,6 +105,24 @@
                             </a>
                         </div>
                         <div>
+                            <?php if($canExpire == true){ ?>
+                            <div class="pt-5 sm:block">
+                                <nav class="flex space-x-0 items-center" aria-label="Tabs">
+                                    <?php if($expiryType == 'both'){ ?>
+                                    <a  class="spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> or </a>
+                                    <a  class="spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
+                                    <?php }elseif($expiryType == 'download'){ ?>
+                                        <a  class="spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
+                                    <?php }elseif($expiryType == 'date'){ ?>
+                                    <a  class="spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
+                                    <?php } ?>
+                                </nav>
+                            </div>
+                            <?php } ?>
                             <label for="share" class="block text-sm font-medium mt-4 text-gray-100">Download link</label>
                             <div class="mt-1 relative flex items-center">
                                 <input type="text" name="share" id="share" value="{{ $fileShareURL }}" readonly class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">
@@ -96,7 +131,7 @@
                                 </div>
                             </div>
                             <!-- Check if DROPSPACE_MAIL_ENABLED is true-->
-                            @if(env('DROPSPACE_MAIL_ENABLED'))
+                            @if(env('DROPSPACE_MAIL_ENABLED') == true)
                             <label for="share" class="block text-sm font-medium mt-4 text-gray-100">Send link in email</label>
                             <div class="mt-1 relative flex items-center">
                                 <input type="email" name="share" id="sharemail" placeholder="email@domain.com" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">
@@ -134,7 +169,7 @@
             file_id: "{{ $fileID }}",
             email: toemail,
             _token: "{{ csrf_token() }}",
-            @if ($password_protected == true)
+            @if($password_protected == true)
             hash: "{{ $hash }}"
             @endif
         }

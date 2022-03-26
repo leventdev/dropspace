@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('dropspace:remove-expired')->everyFiveMinutes()->withoutOverlapping()->runInBackground();
     }
 
     /**

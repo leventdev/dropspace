@@ -5,7 +5,11 @@ module.exports = {
     "./resources/**/*.vue",
   ],
   theme: {
-    extend: {},
+    extend: {
+      variants: {
+        opacity: ({ after }) => after(['disabled'])
+      },
+    },
   },
   plugins: [
     require('@tailwindcss/forms'),
