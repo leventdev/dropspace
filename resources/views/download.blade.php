@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="<?php
 
                                     use App\Http\Controllers\FileController;
-use NunoMaduro\Collision\Adapters\Phpunit\Style;
+                                    use NunoMaduro\Collision\Adapters\Phpunit\Style;
 
                                     echo asset('css/app.css') ?>" type="text/css">
     <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}" />
@@ -37,45 +37,112 @@ use NunoMaduro\Collision\Adapters\Phpunit\Style;
 
 <body class="h-full">
     <style>
-.danger-shake {
-  /* Start the shake animation and make the animation last for 0.5 seconds */
-  animation: shake 3.5s; 
+        .danger-shake {
+            /* Start the shake animation and make the animation last for 0.5 seconds */
+            animation: shake 3.5s;
 
-  /* When the animation is finished, start again */
-  animation-iteration-count: infinite;
+            /* When the animation is finished, start again */
+            animation-iteration-count: infinite;
 
-}
+        }
 
-@keyframes shake {
-  2% { transform: translate(0.5px, 0.5px) rotate(0deg); }
-  4% { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
-  6% { transform: translate(-0.5px, 0px) rotate(1deg); }
-  8% { transform: translate(0.5px, 0.5px) rotate(0deg); }
-  10% { transform: translate(0.5px, -0.5px) rotate(1deg); }
-  12% { transform: translate(-0.5px, 0px) rotate(-1deg); }
-  14% { transform: translate(-0.5px, 0.5px) rotate(0deg); }
-  16% { transform: translate(0.5px, 0.5px) rotate(0deg); }
-  18% { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
-  20% { transform: translate(-0.5px, 0px) rotate(1deg); }
-  22% { transform: translate(0.5px, 0.5px) rotate(0deg); }
-  24% { transform: translate(0.5px, -0.5px) rotate(1deg); }
-  26% { transform: translate(-0.5px, 0px) rotate(-1deg); }
-  28% { transform: translate(-0.5px, 0.5px) rotate(0deg); }
-  30% { transform: translate(0.5px, 0.5px) rotate(0deg); }
-  32% { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
-  34% { transform: translate(-0.5px, 0px) rotate(1deg); }
-  36% { transform: translate(0.5px, 0.5px) rotate(0deg); }
-  40% { transform: translate(0.5px, -0.5px) rotate(1deg); }
-  42% { transform: translate(-0.5px, 0px) rotate(-1deg); }
-  44% { transform: translate(-0.5px, 0.5px) rotate(0deg); }
-  45% { transform: translate(0px, 0.5px) rotate(0deg); }
-  46% { transform: translate(0px, 0px) rotate(0deg); }
-  100% { transform: translate(0px, 0px) rotate(0deg); }
-}
+        @keyframes shake {
+            2% {
+                transform: translate(0.5px, 0.5px) rotate(0deg);
+            }
 
-.spinning-gradient {
-    background-image: linear-gradient(0deg, #6366f1, #3b82f6);
-}
+            4% {
+                transform: translate(-0.5px, -0.5px) rotate(-1deg);
+            }
+
+            6% {
+                transform: translate(-0.5px, 0px) rotate(1deg);
+            }
+
+            8% {
+                transform: translate(0.5px, 0.5px) rotate(0deg);
+            }
+
+            10% {
+                transform: translate(0.5px, -0.5px) rotate(1deg);
+            }
+
+            12% {
+                transform: translate(-0.5px, 0px) rotate(-1deg);
+            }
+
+            14% {
+                transform: translate(-0.5px, 0.5px) rotate(0deg);
+            }
+
+            16% {
+                transform: translate(0.5px, 0.5px) rotate(0deg);
+            }
+
+            18% {
+                transform: translate(-0.5px, -0.5px) rotate(-1deg);
+            }
+
+            20% {
+                transform: translate(-0.5px, 0px) rotate(1deg);
+            }
+
+            22% {
+                transform: translate(0.5px, 0.5px) rotate(0deg);
+            }
+
+            24% {
+                transform: translate(0.5px, -0.5px) rotate(1deg);
+            }
+
+            26% {
+                transform: translate(-0.5px, 0px) rotate(-1deg);
+            }
+
+            28% {
+                transform: translate(-0.5px, 0.5px) rotate(0deg);
+            }
+
+            30% {
+                transform: translate(0.5px, 0.5px) rotate(0deg);
+            }
+
+            32% {
+                transform: translate(-0.5px, -0.5px) rotate(-1deg);
+            }
+
+            34% {
+                transform: translate(-0.5px, 0px) rotate(1deg);
+            }
+
+            36% {
+                transform: translate(0.5px, 0.5px) rotate(0deg);
+            }
+
+            40% {
+                transform: translate(0.5px, -0.5px) rotate(1deg);
+            }
+
+            42% {
+                transform: translate(-0.5px, 0px) rotate(-1deg);
+            }
+
+            44% {
+                transform: translate(-0.5px, 0.5px) rotate(0deg);
+            }
+
+            45% {
+                transform: translate(0px, 0.5px) rotate(0deg);
+            }
+
+            46% {
+                transform: translate(0px, 0px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(0px, 0px) rotate(0deg);
+            }
+        }
 
         .button--loading .button__text {
             visibility: hidden;
@@ -129,23 +196,23 @@ use NunoMaduro\Collision\Adapters\Phpunit\Style;
                             </a>
                         </div>
                         <div>
-                            <?php if($canExpire == true){ ?>
-                            <div class="pt-5 sm:block">
-                                <nav class="flex space-x-0 items-center" aria-label="Tabs">
-                                    <?php if($expiryType == 'both'){ ?>
-                                    <a id="spin-download" class="<?php if($downloadInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
-                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> or </a>
-                                    <a  id="spin-date" class="<?php if($dateInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
-                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
-                                    <?php }elseif($expiryType == 'download'){ ?>
-                                        <a id="spin-download" class="<?php if($downloadInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
-                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
-                                    <?php }elseif($expiryType == 'date'){ ?>
-                                    <a  id="spin-date" class="<?php if($dateInDanger == true) echo 'danger-shake' ?> spinning-gradient text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
-                                    <a  class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
-                                    <?php } ?>
-                                </nav>
-                            </div>
+                            <?php if ($canExpire == true) { ?>
+                                <div class="pt-5 sm:block">
+                                    <nav class="flex space-x-0 items-center" aria-label="Tabs">
+                                        <?php if ($expiryType == 'both') { ?>
+                                            <a name="download-limit" href="{{ $fileURL }}" id="spin-download" class="<?php if ($downloadInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                            <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> or </a>
+                                            <a name="expiry-date" href="{{ $fileURL }}" id="spin-date" class="<?php if ($dateInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                            <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
+                                        <?php } elseif ($expiryType == 'download') { ?>
+                                            <a name="download-limit" href="{{ $fileURL }}" id="spin-download" class="<?php if ($downloadInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                            <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
+                                        <?php } elseif ($expiryType == 'date') { ?>
+                                            <a name="expiry-date" href="{{ $fileURL }}" id="spin-date" class="<?php if ($dateInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                            <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
+                                        <?php } ?>
+                                    </nav>
+                                </div>
                             <?php } ?>
                             <label for="share" class="block text-sm font-medium mt-4 text-gray-100">Download link</label>
                             <div class="mt-1 relative flex items-center">
@@ -185,18 +252,24 @@ use NunoMaduro\Collision\Adapters\Phpunit\Style;
 <script>
     var angle = 0;
 
-var pill_download_limit = $('#spin-download');
-var pill_date_expiry = $('#spin-date');
+    var pill_download_limit = $('#spin-download');
+    var pill_date_expiry = $('#spin-date');
+    var color1download = '{{ $color1download}}';
+    var color2download = '{{ $color2download}}';
+    var color1date = '{{ $color1date}}';
+    var color2date = '{{ $color2date}}';
+    updateExpiry();
 
-function changeAngle() {
-    angle = (angle + 5) % 360;
-    pill_download_limit.css({
-        'background': '-webkit-linear-gradient(' + angle + 'deg,{{ $color1download}}, {{ $color2download}})',
-    });
-    pill_date_expiry.css({
-        'background': '-webkit-linear-gradient(' + angle + 'deg,{{ $color2date}}, {{ $color1date}})',
-    });
-}
+    function changeAngle() {
+        angle = (angle + 5) % 360;
+        pill_download_limit.css({
+            'background': '-webkit-linear-gradient(' + angle + 'deg,' + color1download + ', ' + color2download + ')',
+        });
+        pill_date_expiry.css({
+            'background': '-webkit-linear-gradient(' + angle + 'deg,' + color2date + ', ' + color1date + ')',
+        });
+    }
+
     setInterval(changeAngle, 50);
 
     function sendEmail() {
@@ -216,9 +289,9 @@ function changeAngle() {
             file_id: "{{ $fileID }}",
             email: toemail,
             _token: "{{ csrf_token() }}",
-            @if($password_protected == true)
-            hash: "{{ $hash }}"
-            @endif
+            <?php if ($password_protected == true) { ?>
+                <?php echo 'hash: ' . $hash; ?>
+            <?php } ?>
         }
         $.post(Url, data, function(data, status) {
             btn.classList.remove("button--loading");
@@ -263,6 +336,7 @@ function changeAngle() {
 
 
     }
+
     function copyCurl() {
         var copyText = document.getElementById("curl");
         /* Select the text field */
@@ -297,6 +371,41 @@ function changeAngle() {
 
 
     }
+    <?php if ($canExpire == true) { ?>
+
+        function updateExpiry() {
+            //Make API call to update expiry date and download limit
+            const Url = "{{secure_url('update-expiry')}}";
+            const data = {
+                id: "{{ $fileID }}",
+                _token: "{{ csrf_token() }}"
+            }
+            //repeat every 1 second
+            setInterval(function() {
+                $.post(Url, data, function(response) {
+                    async: false;
+                    //update expiry date and download limit
+                    document.getElementsByName('download-limit').innerText = response.download_limit;
+                    document.getElementsByName('expiry-date').innerText = response.expiry_date;
+                    $('[name="download-limit"]').text(response.download_limit);
+                    $('[name="expiry-date"]').text(response.expiry_date);
+
+                    if (response.dateInDanger == true) {
+                        color1date = response.color1date;
+                        color2date = response.color2date;
+                        $('[name="expiry-date"]').addClass("danger-shake");
+                        //add danger-shake class to pill
+                    }
+                    if (response.downloadInDanger == true) {
+                        color1download = response.color1download;
+                        color2download = response.color2download;
+                        //add danger-shake class to pill
+                        $('[name="download-limit"]').addClass("danger-shake");
+                    }
+                });
+            }, 10000);
+        }
+    <?php } ?>
 </script>
 
 </html>

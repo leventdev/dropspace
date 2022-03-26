@@ -17,6 +17,8 @@ Route::get('/', function () {
     return view('upload');
 });
 
+//Route to updating the expiry of a file
+Route::post('/update-expiry', 'App\Http\Controllers\FileDownloadController@updateExpiry');
 //Route to uploading a file (Not the view, the actual file upload)
 Route::post('/upload-file', 'App\Http\Controllers\FileUploadController@uploadFile');
 //Route to setting file download limit, expiry date, password, etc.
