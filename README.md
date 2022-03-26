@@ -1,4 +1,4 @@
-<p align="center"><a><img src="/public/dropspace-cover.png"></a></p>
+<p align="center"><a><img src="/public/mockups/logo.png"></a></p>
 
 <!-- 
     Insert tags, badges, etc... here
