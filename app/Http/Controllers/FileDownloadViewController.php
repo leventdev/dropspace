@@ -77,7 +77,7 @@ class FileDownloadViewController extends Controller
                                     $expiryType = 'both';
                                 }
                                 //Check if the file is expired or not
-                                if ($canExpire == true){
+                                if ($canExpire == true) {
                                     if ($file->expiry_date != null) {
                                         $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
                                         if ($date->isPast()) {
@@ -88,7 +88,7 @@ class FileDownloadViewController extends Controller
                                     }
                                     if ($file->download_limit != 0) {
                                         if ($file->download_count >= $file->download_limit) {
-                                            return view('download-error', ['error' => 'This file has reached its download limit.']); 
+                                            return view('download-error', ['error' => 'This file has reached its download limit.']);
                                         }
                                     }
                                 }
@@ -142,7 +142,7 @@ class FileDownloadViewController extends Controller
                             $expiryType = 'both';
                         }
                         //Check if the file is expired or not
-                        if ($canExpire == true){
+                        if ($canExpire == true) {
                             if ($file->expiry_date != null) {
                                 $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
                                 if ($date->isPast()) {
@@ -153,7 +153,7 @@ class FileDownloadViewController extends Controller
                             }
                             if ($file->download_limit != 0) {
                                 if ($file->download_count >= $file->download_limit) {
-                                    return view('download-error', ['error' => 'This file has reached its download limit.']); 
+                                    return view('download-error', ['error' => 'This file has reached its download limit.']);
                                 }
                             }
                         }
@@ -161,7 +161,7 @@ class FileDownloadViewController extends Controller
                     }
                 } else {
                     //If file is not saved in storage, return error page
-                    if($file->deleted_for_expiry == 1) {
+                    if ($file->deleted_for_expiry == 1) {
                         return view('download-error', ['error' => 'This file has been deleted for expiring.']);
                     } else {
                         return view('download-error', ['error' => 'The file you are trying to download does not exist.']);
@@ -169,11 +169,7 @@ class FileDownloadViewController extends Controller
                 }
             } else {
                 //If the file does not exist, the user is redirected to an error page
-                if($file->deleted_for_expiry == 1) {
-                    return view('download-error', ['error' => 'This file has been deleted for expiring.']);
-                } else {
-                    return view('download-error', ['error' => 'The file you are trying to download does not exist.']);
-                }
+                return view('download-error', ['error' => 'The file you are trying to download does not exist.']);
             }
         } catch (Exception $e) {
             //If an error occurs, the user is redirected to an error page

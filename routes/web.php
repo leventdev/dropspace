@@ -16,10 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('upload');
 });
-Route::get('/test', function () {
-    return view('test');
-});
-
 
 //Route to uploading a file (Not the view, the actual file upload)
 Route::post('/upload-file', 'App\Http\Controllers\FileUploadController@uploadFile');

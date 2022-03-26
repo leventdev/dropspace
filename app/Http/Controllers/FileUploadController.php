@@ -61,7 +61,7 @@ class FileUploadController extends Controller
         if($file->finished_uploading == true){
             return view('download-error', ['error' => "This file has already been uploaded before, you can't modify the settings."]);
         }
-        return view('test', ['fileName' => $file->name, 'uploadDate' => $file->created_at, 'fileID' => $file->file_identifier]);
+        return view('upload-settings', ['fileName' => $file->name, 'uploadDate' => $file->created_at, 'fileID' => $file->file_identifier]);
     }
 
     public function saveFileDetails($id, Request $request){
