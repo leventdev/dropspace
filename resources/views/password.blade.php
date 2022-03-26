@@ -22,7 +22,7 @@
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ $fileURL )}}">
+    <meta property="twitter:url" content="{{ $fileURL }}">
     <meta property="twitter:title" content="Download | DropSpace">
     <meta property="twitter:description" content="Download a password protected file from DropSpace file share">
 </head>
