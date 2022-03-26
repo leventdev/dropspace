@@ -25,7 +25,7 @@ DropSpace is built using [Laravel](https://laravel.com).
 | Set expiry based on date   | :white_check_mark: |
 | Auto delete based on date expiry   | :white_check_mark: |
 | Auto delete based on download count   | :white_check_mark: |
-| File download via curl (click-to-copy command)   | :x: |
+| File download via curl (click-to-copy command)   | :white_check_mark: |
 | File upload via CLI   | :x: |
 | File storage in S3 storage   | :x: |
 | Auto update   | :x: |

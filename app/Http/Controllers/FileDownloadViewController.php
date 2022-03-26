@@ -94,32 +94,34 @@ class FileDownloadViewController extends Controller
                                 }
                                 //If the file is not expired, return the download view
                                 $color1date = '#3b82f6';
-                        $color2date = '#6366f1';
-                        $color1download = '#3b82f6';
-                        $color2download = '#6366f1';
-                        $dateInDanger = false;
-                        $downloadInDanger = false;
-                        if ($canExpire) {
-                            //Check if less then 2 download left
-                            if ($file->download_limit != 0) {
-                                if ($file->download_limit - $file->download_count <= 2) {
-                                    $color1download = '#EA4C4C';
-                                    $color2download = '#dc2626';
-                                    $downloadInDanger = true;
+                                $color2date = '#6366f1';
+                                $color1download = '#3b82f6';
+                                $color2download = '#6366f1';
+                                $dateInDanger = false;
+                                $downloadInDanger = false;
+                                if ($canExpire) {
+                                    //Check if less then 2 download left
+                                    if ($file->download_limit != 0) {
+                                        if ($file->download_limit - $file->download_count <= 2) {
+                                            $color1download = '#EA4C4C';
+                                            $color2download = '#dc2626';
+                                            $downloadInDanger = true;
+                                        }
+                                    }
+                                    //Check if less than an hour left
+                                    if ($file->expiry_date != null) {
+                                        $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
+                                        if ($date->diffInHours() <= 1) {
+                                            $color1date = '#EA4C4C';
+                                            $color2date = '#dc2626';
+                                            $dateInDanger = true;
+                                        }
+                                    }
                                 }
-                            }
-                            //Check if less than an hour left
-                            if($file->expiry_date != null){
-                                $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
-                                if($date->diffInHours() <= 1){
-                                    $color1date = '#EA4C4C';
-                                    $color2date = '#dc2626';
-                                    $dateInDanger = true;
-                                }
-                            }
-                        }
+                                $curlCommand = 'curl "'.$downloadURL.'"  \ 
+--output ' . $file->name;
 
-                                return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => true, 'hash' => $file->password, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'downloadInDanger' => $downloadInDanger, 'dateInDanger' => $dateInDanger]);
+                                return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => true, 'hash' => $file->password, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'downloadInDanger' => $downloadInDanger, 'dateInDanger' => $dateInDanger, 'fileShareCURL' => $curlCommand]);
                             } else {
                                 //If the hash is incorrect, return the download error view
                                 if (request()->has('hash')) {
@@ -201,17 +203,19 @@ class FileDownloadViewController extends Controller
                                 }
                             }
                             //Check if less than an hour left
-                            if($file->expiry_date != null){
+                            if ($file->expiry_date != null) {
                                 $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
-                                if($date->diffInHours() <= 1){
+                                if ($date->diffInHours() <= 1) {
                                     $color1date = '#EA4C4C';
                                     $color2date = '#dc2626';
                                     $dateInDanger = true;
                                 }
                             }
                         }
+                        $curlCommand = 'curl "'.$downloadURL.'"  \ 
+--output ' . $file->name;
 
-                        return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => false, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'dateInDanger' => $dateInDanger, 'downloadInDanger' => $downloadInDanger]);
+                        return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => false, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'dateInDanger' => $dateInDanger, 'downloadInDanger' => $downloadInDanger, 'fileShareCURL' => $curlCommand]);
                     }
                 } else {
                     //If file is not saved in storage, return error page

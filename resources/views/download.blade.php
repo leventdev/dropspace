@@ -164,6 +164,13 @@ use NunoMaduro\Collision\Adapters\Phpunit\Style;
                                 </div>
                             </div>
                             @endif
+                            <label for="curl" class="block text-sm font-medium mt-4 text-gray-100">Download via cURL</label>
+                            <div class="mt-1 relative flex items-center">
+                                <textarea type="text" name="curl" id="curl" readonly class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">{{ $fileShareCURL }}</textarea>
+                                <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
+                                    <button id="curl-button" onclick="copyCurl()" class="inline-flex items-center border border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400 focus:bg-gray-200 checked:bg-gray-200 hover:bg-gray-100"> Copy </kbd>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -244,6 +251,40 @@ function changeAngle() {
         }, function() {
             /* Alert the copied text */
             var copyButton = document.getElementById("copy-button");
+            copyButton.innerHTML = "Failed";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-red-500");
+            copyButton.classList.add("hover:bg-red-400");
+        });
+
+
+    }
+    function copyCurl() {
+        var copyText = document.getElementById("curl");
+        /* Select the text field */
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+        /* Copy the text inside the text field */
+
+        //copy value of element with share id to the users clipboard
+        navigator.clipboard.writeText(copyText.value).then(function() {
+            /* Alert the copied text */
+            var copyButton = document.getElementById("curl-button");
+            copyButton.innerHTML = "Copied!";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-green-500");
+            copyButton.classList.add("hover:bg-green-400");
+        }, function() {
+            /* Alert the copied text */
+            var copyButton = document.getElementById("curl-button");
             copyButton.innerHTML = "Failed";
             //remove style text-gray-400
             copyButton.classList.remove("text-gray-400");
