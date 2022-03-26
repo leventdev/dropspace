@@ -187,7 +187,7 @@
                 <div class="sm:ml-6 self-center">
                     <div class="sm:border-l sm:border-gray-200 sm:pl-6">
                         <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-                            <a href="{{ $fileURL }}" download class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <a href="{{ $fileURL }}" onclick="manualRefresh()" download class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -200,15 +200,15 @@
                                 <div class="pt-5 sm:block">
                                     <nav class="flex space-x-0 items-center" aria-label="Tabs">
                                         <?php if ($expiryType == 'both') { ?>
-                                            <a name="download-limit" href="{{ $fileURL }}" id="spin-download" class="<?php if ($downloadInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                            <a name="download-limit" onclick="manualRefresh()" href="{{ $fileURL }}" id="spin-download" class="<?php if ($downloadInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
                                             <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> or </a>
-                                            <a name="expiry-date" href="{{ $fileURL }}" id="spin-date" class="<?php if ($dateInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                            <a name="expiry-date" onclick="manualRefresh()" href="{{ $fileURL }}" id="spin-date" class="<?php if ($dateInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
                                             <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
                                         <?php } elseif ($expiryType == 'download') { ?>
-                                            <a name="download-limit" href="{{ $fileURL }}" id="spin-download" class="<?php if ($downloadInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
+                                            <a name="download-limit" onclick="manualRefresh()" href="{{ $fileURL }}" id="spin-download" class="<?php if ($downloadInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $downloadLimitAmount}} </a>
                                             <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
                                         <?php } elseif ($expiryType == 'date') { ?>
-                                            <a name="expiry-date" href="{{ $fileURL }}" id="spin-date" class="<?php if ($dateInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
+                                            <a name="expiry-date" onclick="manualRefresh()" href="{{ $fileURL }}" id="spin-date" class="<?php if ($dateInDanger == true) echo 'danger-shake' ?>  text-center bg-gradient-to-r to-indigo-500 from-blue-500 text-white px-3 py-2 font-medium text-sm rounded-md" aria-current="page"> {{ $expiryDate}} </a>
                                             <a class="text-center text-gray-50  px-3 py-2 font-medium text-sm rounded-md"> left until this file expires </a>
                                         <?php } ?>
                                     </nav>
@@ -258,6 +258,7 @@
     var color2download = '{{ $color2download}}';
     var color1date = '{{ $color1date}}';
     var color2date = '{{ $color2date}}';
+    //strart updateExpiry on page load
     updateExpiry();
 
     function changeAngle() {
@@ -335,6 +336,35 @@
         });
 
 
+    }
+
+    function manualRefresh() {
+        const Url = "{{secure_url('update-expiry')}}";
+        const data = {
+            id: "{{ $fileID }}",
+            _token: "{{ csrf_token() }}"
+        }
+        $.post(Url, data, function(response) {
+            async: false;
+            //update expiry date and download limit
+            document.getElementsByName('download-limit').innerText = response.download_limit;
+            document.getElementsByName('expiry-date').innerText = response.expiry_date;
+            $('[name="download-limit"]').text(response.download_limit);
+            $('[name="expiry-date"]').text(response.expiry_date);
+
+            if (response.dateInDanger == true) {
+                color1date = response.color1date;
+                color2date = response.color2date;
+                $('[name="expiry-date"]').addClass("danger-shake");
+                //add danger-shake class to pill
+            }
+            if (response.downloadInDanger == true) {
+                color1download = response.color1download;
+                color2download = response.color2download;
+                //add danger-shake class to pill
+                $('[name="download-limit"]').addClass("danger-shake");
+            }
+        });
     }
 
     function copyCurl() {
