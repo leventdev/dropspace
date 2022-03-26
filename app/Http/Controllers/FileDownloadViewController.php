@@ -103,7 +103,7 @@ class FileDownloadViewController extends Controller
                             //Check if less then 2 download left
                             if ($file->download_limit != 0) {
                                 if ($file->download_limit - $file->download_count <= 2) {
-                                    $color1download = '#ef4444';
+                                    $color1download = '#EA4C4C';
                                     $color2download = '#dc2626';
                                     $downloadInDanger = true;
                                 }
@@ -112,7 +112,7 @@ class FileDownloadViewController extends Controller
                             if($file->expiry_date != null){
                                 $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
                                 if($date->diffInHours() <= 1){
-                                    $color1date = '#ef4444';
+                                    $color1date = '#EA4C4C';
                                     $color2date = '#dc2626';
                                     $dateInDanger = true;
                                 }
@@ -195,7 +195,7 @@ class FileDownloadViewController extends Controller
                             //Check if less then 2 download left
                             if ($file->download_limit != 0) {
                                 if ($file->download_limit - $file->download_count <= 2) {
-                                    $color1download = '#ef4444';
+                                    $color1download = '#EA4C4C';
                                     $color2download = '#dc2626';
                                     $downloadInDanger = true;
                                 }
@@ -204,7 +204,7 @@ class FileDownloadViewController extends Controller
                             if($file->expiry_date != null){
                                 $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
                                 if($date->diffInHours() <= 1){
-                                    $color1date = '#ef4444';
+                                    $color1date = '#EA4C4C';
                                     $color2date = '#dc2626';
                                     $dateInDanger = true;
                                 }

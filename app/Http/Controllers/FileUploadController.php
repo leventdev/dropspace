@@ -79,6 +79,8 @@ class FileUploadController extends Controller
         //cases for the expiry date, never, 1 week, 1 month, 1 year
         if ($expiryDate == "never") {
             $file->expiry_date = null;
+        } elseif ($expiryDate == "1-day"){
+            $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 day'));
         } elseif ($expiryDate == "1-week") {
             $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 week'));
         } elseif ($expiryDate == "1-month") {
