@@ -8,6 +8,12 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Pion\Laravel\ChunkUpload\Exceptions\UploadFailedException;
+use Illuminate\Http\UploadedFile;
+use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
+use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
+use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 
 class FileUploadController extends Controller
 {
@@ -43,33 +49,53 @@ class FileUploadController extends Controller
             $file->finished_uploading = false;
             //This saves the file's data to the database
             $file->save();
-            return redirect('/set-file-details/'.$file->file_identifier);
-        } 
-        catch (Exception $e) {
+            return redirect('/set-file-details/' . $file->file_identifier);
+        } catch (Exception $e) {
             //If an error occurs, the error is returned to the user
             return view('download-error', ['error' => $e->getMessage() . ". Contact admin."]);
         }
     }
 
-    public function setFileDetails($id){
+    public function uploadChunkedFile(Request $request)
+    {
+        try {
+            $receiver = new FileReceiver("file", $request, HandlerFactory::classFromRequest($request));
+            if($receiver->isUploaded() === false) {
+                throw new UploadFailedException("File was not uploaded.");
+            }
+            $save = $receiver->receive();
+
+            if($save->isFinished()) {
+                //if we reach here, that means all chunks have been uploaded.
+            }
+            //File not uploaded yet, we enter chunk mode
+            
+        } catch (Exception $e) {
+            return view('download-error', ['error' => $e->getMessage() . ". Contact admin."]);
+        }
+    }
+
+    public function setFileDetails($id)
+    {
         //This function is called when the user wants to set the file's details, this is the view that is shown to the user
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
             //If the file doesn't exist, the user is redirected to the error page
             return view('download-error', ['error' => "File doesn't exist."]);
         }
-        if($file->finished_uploading == true){
+        if ($file->finished_uploading == true) {
             return view('download-error', ['error' => "This file has already been uploaded before, you can't modify the settings."]);
         }
         return view('upload-settings', ['fileName' => $file->name, 'uploadDate' => $file->created_at, 'fileID' => $file->file_identifier]);
     }
 
-    public function saveFileDetails($id, Request $request){
+    public function saveFileDetails($id, Request $request)
+    {
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
             return view('download-error', ['error' => "File doesn't exist."]);
         }
-        if($file->finished_uploading == true){
+        if ($file->finished_uploading == true) {
             return view('download-error', ['error' => "This file has already been uploaded before, you can't modify the settings."]);
         }
         //Saves the file's additional details to the database
@@ -79,7 +105,7 @@ class FileUploadController extends Controller
         //cases for the expiry date, never, 1 week, 1 month, 1 year
         if ($expiryDate == "never") {
             $file->expiry_date = null;
-        } elseif ($expiryDate == "1-day"){
+        } elseif ($expiryDate == "1-day") {
             $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 day'));
         } elseif ($expiryDate == "1-week") {
             $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 week'));
@@ -88,7 +114,7 @@ class FileUploadController extends Controller
         } elseif ($expiryDate == "1-year") {
             $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 year'));
         }
-        if(request()->passbool == "true"){
+        if (request()->passbool == "true") {
             $file->is_protected = true;
             $file->password = sha1($request->input('password'));
         } else {
@@ -97,15 +123,14 @@ class FileUploadController extends Controller
         }
         $file->finished_uploading = true;
         $file->save();
-        if($file->is_protected){
+        if ($file->is_protected) {
             //return redirect to download with password
             //This redirects the user to the download page, with the file's identifier and the password as parameters
-            return redirect('/download/'.$file->file_identifier . '?hash='. $file->password);
-        }
-        else{
+            return redirect('/download/' . $file->file_identifier . '?hash=' . $file->password);
+        } else {
             //return redirect to download without password
             //This redirects the user to the download page, with the file's identifier.
-            return redirect('/download/'.$file->file_identifier);
+            return redirect('/download/' . $file->file_identifier);
         }
     }
 }
