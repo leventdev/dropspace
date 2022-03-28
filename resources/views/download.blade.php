@@ -222,7 +222,7 @@
                                 </div>
                             </div>
                             <!-- Check if DROPSPACE_MAIL_ENABLED is true-->
-                            @if(env('DROPSPACE_MAIL_ENABLED') == true)
+                            <?php if($canEmail == true) { ?>
                             <label for="share" class="block text-sm font-medium mt-4 text-gray-100">Send link in email</label>
                             <div class="mt-1 relative flex items-center">
                                 <input type="email" name="share" id="sharemail" placeholder="email@domain.com" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">
@@ -230,7 +230,7 @@
                                     <button id="send-button" onclick="sendEmail()" class="inline-flex items-center border border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400 focus:bg-gray-200 checked:bg-gray-200 hover:bg-gray-100"> Send </kbd>
                                 </div>
                             </div>
-                            @endif
+                            <?php } ?>
                             <label for="curl" class="block text-sm font-medium mt-4 text-gray-100">Download via cURL</label>
                             <div class="mt-1 relative flex items-center">
                                 <textarea type="text" name="curl" id="curl" readonly class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">{{ $fileShareCURL }}</textarea>
