@@ -259,9 +259,7 @@
     var color1date = '{{ $color1date}}';
     var color2date = '{{ $color2date}}';
     //strart updateExpiry on page load
-    window.onload = function() {
-        updateExpiry();
-    };
+    updateExpiry();
 
     function changeAngle() {
         angle = (angle + 5) % 360;
