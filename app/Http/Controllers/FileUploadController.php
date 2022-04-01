@@ -12,6 +12,51 @@ use Illuminate\Support\Facades\Storage;
 class FileUploadController extends Controller
 {
     //
+
+    public function uploadChunks(){
+        //This is gonna be a blast to write
+
+        //This function is called from a get route
+        //Get the total number of chunks from resumableTotalChunks
+        $totalChunks = request()->resumableTotalChunks;
+        //Get the chunk number from resumableChunkNumber
+        $chunkNumber = request()->resumableChunkNumber;
+        //Get the resumableIdentifier from resumableIdentifier
+        $resumableIdentifier = request()->resumableIdentifier;
+        //Get the client filename from resumableFilename
+        $clientFilename = request()->resumableFilename;
+
+        //If this is the first chunk, create a new file
+        if($totalChunks == 1){
+            //Save file to storage and database
+        }
+        if($chunkNumber == 1){
+            //Save file to storage
+            Storage::putFileAs('dropspace/uploads/chunks', request()->file('file'), $resumableIdentifier);
+            return response()->json(['success' => true]);
+        }
+        Storage::append('dropspace/uploads/chunks/'.$resumableIdentifier, request()->file('file')->get());
+        return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
+        //Check if this is the first chunk
+        //Storage::putFileAs('dropspace/chunks/',request()->file('file'), $chunkNumber . $clientFilename );
+    }
+
+    public function getlastChunkNumber($resumableIdentifier){
+        //Get the last chunk number
+        //Last chunk number is the number of a file called {resumableIdentifier}-{lastchunknumber}
+        //The {lastchunknumber} part is unkown at this point
+        //So we need to find a file beggining with {resumableIdentifier}- and get the last number
+        //This is the last chunk number
+        $lastChunkNumber = 0;
+        $files = Storage::files('dropspace/uploads/chunks');
+        foreach($files as $file){
+            if(Str::startsWith($file, $resumableIdentifier.'-')){
+                $lastChunkNumber = substr($file, strlen($resumableIdentifier.'-'));
+            }
+        }
+        return $lastChunkNumber;
+    }
+
     public function uploadFile()
     {
         try {
