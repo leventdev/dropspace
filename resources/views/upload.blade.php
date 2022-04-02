@@ -180,7 +180,6 @@
         console.log(message);
         const btn = document.getElementById('buttonid');
         btn.classList.remove("button--loading");
-        btn.classList.add("button--error");
         btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Error while uploading file. Please try again. </span>';
         document.getElementById('loader-big').style.display = "none";
     });
@@ -214,6 +213,12 @@
             console.log('md5-s match');
             //window.location.href = "{{url('set-file-details')}}/" + identifier;
             window.location.href = "{{url('set-file-details')}}/" + identifier;
+        }else{
+            console.log(message);
+            const btn = document.getElementById('buttonid');
+            btn.classList.remove("button--loading");
+            btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Checksum verification failed. Please try uploading again. </span>';
+            document.getElementById('loader-big').style.display = "none";   
         }
     }
 
