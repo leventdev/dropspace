@@ -96,7 +96,9 @@ class FileUploadController extends Controller
             Storage::move('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
             $file->path = $file->file_identifier . '.' . $file->extension;
             $file->save();
-            return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
+            //Make MD5 hash of file
+            $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+            return response()->json(['success' => true, 'identifier' => $file->file_identifier,'md5' => $md5]);
         }
         return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
     }

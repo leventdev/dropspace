@@ -28,6 +28,9 @@
     <meta property="twitter:description" content="DropSpace file upload">
     <!--<script src="bower_components/resumablejs/resumable.js" type="application/javascript"></script>-->
     <script src="https://cdnout.com/resumable.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js" integrity="sha512-iWbxiCA4l1WTD0rRctt/BfDEmDC5PiVqFc6c1Rhj/GKjuj6tqrjrikTw3Sypm/eEgMa7jSOS9ydmDlOtxJKlSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js"></script>
+
 </head>
 
 <body class="h-full">
@@ -64,33 +67,32 @@
         }
 
         .finished-animate {
-  background-image: linear-gradient(
-    -45deg,
-    rgba(255, 255, 255, 0.2) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.2) 75%,
-    transparent 75%,
-    transparent
-  );
-  background-size: 50px 50px;
-  animation: move 2s linear infinite;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-  overflow: hidden;
-}
+            background-image: linear-gradient(-45deg,
+                    rgba(255, 255, 255, 0.2) 25%,
+                    transparent 25%,
+                    transparent 50%,
+                    rgba(255, 255, 255, 0.2) 50%,
+                    rgba(255, 255, 255, 0.2) 75%,
+                    transparent 75%,
+                    transparent);
+            background-size: 50px 50px;
+            animation: move 2s linear infinite;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            overflow: hidden;
+        }
 
-@keyframes move {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 50px 50px;
-  }
-}
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 50px 50px;
+            }
+        }
     </style>
     <div class="bg-gray-800 min-h-full px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
         <div class="max-w-max mx-auto">
@@ -109,7 +111,8 @@
                                     </svg>
                                     <span class="mt-2 block text-sm font-medium text-gray-50"> Click to upload a file </span>
                                 </button>
-                                <div id="loader-big" style="display: none;" class="w-64 mt-2 bg-gray-200 rounded-full h-4 dark:bg-gray-500">
+                                <div style="display: none;" id="progress-message" class="mb-0 mt-2 text-lg font-medium dark:text-white">Uploading...</div>
+                                <div id="loader-big" style="display: none;" class="w-64 mt-1 bg-gray-200 rounded-full h-4 dark:bg-gray-500">
                                     <div id="loader-progress" class="bg-blue-600 h-4 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 45%"> 0%</div>
                                 </div>
                                 </input>
@@ -151,16 +154,26 @@
         btn.classList.add("button--loading");
         btn.innerText = "";
         document.getElementById('loader-big').style.display = "block";
+        document.getElementById('progress-message').style.display = "block";
         document.getElementById('upload-icon').style.display = 'none';
     });
+
+    var identifier;
+    var servermd5;
 
     r.on('fileSuccess', function(file, message) {
         console.log(message);
         //redirect to Route::get('/set-file-details/{file_id}'
         //Make identifier the 'identifier' from the message
         //Read message as json
-        var identifier = JSON.parse(message).identifier;
-        window.location.href = "{{url('set-file-details')}}/" + identifier;
+
+        identifier = JSON.parse(message).identifier;
+        servermd5 = JSON.parse(message).md5;
+        //window.location.href = "{{url('set-file-details')}}/" + identifier;
+
+        //checksum = md5 of file.file
+        document.getElementById('progress-message').innerText = "Comparing checksums...";
+        calculate(file.file);
     });
 
     r.on('fileError', function(file, message) {
@@ -172,6 +185,8 @@
         document.getElementById('loader-big').style.display = "none";
     });
 
+    var statusToggle = false;
+
     r.on('fileProgress', (file, ratio) => {
         document.getElementById('loader-progress').style.width = (file.progress() * 100) + "%";
         //Get file progress with 0 decimal rounded up
@@ -182,9 +197,92 @@
             //Wait a second then add class finished-animte
             setTimeout(function() {
                 document.getElementById('loader-progress').classList.add("finished-animate");
+                if(statusToggle == false){
+                    document.getElementById('progress-message').innerText = "Assembling chunks...";
+                    statusToggle = true;
+                }else{
+
+                }
             }, 350);
         }
     });
+
+    function compareHashes(clientmd5) {
+        console.log('md5 of the file (client): ' + clientmd5);
+        console.log('md5 of the file (server): ' + servermd5);
+        if (clientmd5 == servermd5) {
+            console.log('md5-s match');
+            //window.location.href = "{{url('set-file-details')}}/" + identifier;
+            window.location.href = "{{url('set-file-details')}}/" + identifier;
+        }
+    }
+
+    function calculateMD5Hash(file, bufferSize) {
+        var def = Q.defer();
+
+        var fileReader = new FileReader();
+        var fileSlicer = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+        var hashAlgorithm = new SparkMD5();
+        var totalParts = Math.ceil(file.size / bufferSize);
+        var currentPart = 0;
+        var startTime = new Date().getTime();
+
+        fileReader.onload = function(e) {
+            currentPart += 1;
+
+            def.notify({
+                currentPart: currentPart,
+                totalParts: totalParts
+            });
+
+            var buffer = e.target.result;
+            hashAlgorithm.appendBinary(buffer);
+
+            if (currentPart < totalParts) {
+                processNextPart();
+                return;
+            }
+
+            def.resolve({
+                hashResult: hashAlgorithm.end(),
+                duration: new Date().getTime() - startTime
+            });
+        };
+
+        fileReader.onerror = function(e) {
+            def.reject(e);
+        };
+
+        function processNextPart() {
+            var start = currentPart * bufferSize;
+            var end = Math.min(start + bufferSize, file.size);
+            fileReader.readAsBinaryString(fileSlicer.call(file, start, end));
+        }
+
+        processNextPart();
+        return def.promise;
+    }
+
+    var check;
+
+    function calculate(passedFile) {
+        var file = passedFile;
+        var bufferSize = Math.pow(1024, 2) * 10; // 10MB
+
+        calculateMD5Hash(file, bufferSize).then(
+            function(result) {
+                // Success
+                console.log(result);
+                compareHashes(result.hashResult);
+            },
+            function(err) {
+                // There was an error,
+            },
+            function(progress) {
+                // We get notified of the progress as it is executed
+                console.log(progress.currentPart, 'of', progress.totalParts, 'Total bytes:', progress.currentPart * bufferSize, 'of', progress.totalParts * bufferSize);
+            });
+    }
 </script>
 
 </html>

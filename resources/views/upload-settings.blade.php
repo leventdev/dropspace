@@ -118,10 +118,6 @@
     </script>
 </body>
 <script>
-    document.getElementById('buttonid').addEventListener('click', function() {
-        document.getElementById('fileid').click();
-    });
-
     function togglePassword() {
         const passwordtoggle = document.getElementById('passwordtoggle');
         const passwordbutton = document.getElementById('passwordbutton');
