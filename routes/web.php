@@ -17,6 +17,7 @@ Route::get('/', function () {
     return view('upload');
 });
 
+Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks');
 //Route to updating the expiry of a file
 Route::post('/update-expiry', 'App\Http\Controllers\FileDownloadController@updateExpiry');
 //Route to uploading a file (Not the view, the actual file upload)
