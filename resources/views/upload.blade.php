@@ -132,7 +132,7 @@
     });*/
 
     var r = new Resumable({
-        target: "{{url('upload-chunks')}}",
+        target: "{{secure_url('upload-chunks')}}",
         query: {
             _token: '{{ csrf_token() }}'
         },
