@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\File;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class DeleteExpiredFiles extends Command
 {
@@ -31,6 +32,7 @@ class DeleteExpiredFiles extends Command
      */
     public function handle()
     {
+        Log::info('Starting removal of expired files.');
         $files = File::all()->where('deleted_for_expiry', 0);
         foreach ($files as $file) {
             if ($file->expiry_date != null) {
@@ -39,7 +41,7 @@ class DeleteExpiredFiles extends Command
                     Storage::delete('dropspace/uploads/' . $file->path);
                     $file->deleted_for_expiry = 1;
                     $file->save();
-                    $this->info('Deleted file: ' . $file->path . ' for expiry (date): ' . $file->expiry_date);
+                    Log::info('Deleted file: ' . $file->path . ' for expiry (date): ' . $file->expiry_date);
                 }
             }
             if($file->download_limit != 0) {
@@ -47,11 +49,10 @@ class DeleteExpiredFiles extends Command
                     Storage::delete('dropspace/uploads/' . $file->path);
                     $file->deleted_for_expiry = 1;
                     $file->save();
-                    $this->info('Deleted file: ' . $file->path . ' for reaching download limit: ' . $file->download_limit);
+                    Log::info('Deleted file: ' . $file->path . ' for reaching download limit: ' . $file->download_limit);
                 }
             }
         }
-        $this->info(' ');
-        $this->info('Finished removing expired files.');
+        Log::info('Finished removing expired files.');
     }
 }
