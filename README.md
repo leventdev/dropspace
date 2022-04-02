@@ -20,7 +20,7 @@ DropSpace is built using [Laravel](https://laravel.com).
 | Feature                                                         | Status             |
 | --------------------------------------------------------------- | ------------------ |
 | File upload (max 100mb (with CloudFlare))                       | :white_check_mark: |
-| File upload (chunked (custom limit))                            | :x:                |
+| File upload (chunked (custom limit))                            | :white_check_mark: |
 | File sharing in email                                           | :white_check_mark: |
 | File protection                                                 | :white_check_mark: |
 | Set expiry based on download limit                              | :white_check_mark: |
