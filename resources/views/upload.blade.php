@@ -29,11 +29,73 @@
     <!--<script src="bower_components/resumablejs/resumable.js" type="application/javascript"></script>-->
     <script src="https://cdnout.com/resumable.js"></script>
 </head>
+
 <body class="h-full">
+    <style>
+        .button--loading .button__text {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .button--loading::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            margin: auto;
+            border: 7px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 100%;
+            animation: button-loading-spinner 0.8s ease infinite;
+        }
+
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+
+            to {
+                transform: rotate(1turn);
+            }
+        }
+
+        .finished-animate {
+  background-image: linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 50px 50px;
+  animation: move 2s linear infinite;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  overflow: hidden;
+}
+
+@keyframes move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
+}
+    </style>
     <div class="bg-gray-800 min-h-full px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
         <div class="max-w-max mx-auto">
             <main class="sm:flex">
-                <div data-aos="fade-right" class="md:shadow sm:shadow-none sm:bg-none rounded-lg  md:bg-gradient-to-r md:from-indigo-500 md:to-blue-500 h-full">
+                <div data-aos="fade-right" class="md:shadow sm:shadow-none sm:bg-none rounded-lg md:bg-gradient-to-r md:from-indigo-500 md:to-blue-500 h-full">
                     <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="p-5 h-26 w-96 object-contain">
                     <!--<p class="text-left text-sm font-medium md:text-white text-indigo-600 sm:text-sm pb-0 md:pl-5">From <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="pb-2 pr-2 h-8 object-contain inline-block"></p>-->
                 </div>
@@ -41,12 +103,15 @@
                     <div class="sm:ml-6 self-center sm:border-l sm:border-gray-200 sm:pl-6">
                         <div>
                             <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-                                <button type="button" id="buttonid" class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                <button type="button" id="buttonid" class="relative block min-w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <svg id="upload-icon" xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
                                     <span class="mt-2 block text-sm font-medium text-gray-50"> Click to upload a file </span>
                                 </button>
+                                <div id="loader-big" style="display: none;" class="w-64 mt-2 bg-gray-200 rounded-full h-4 dark:bg-gray-500">
+                                    <div id="loader-progress" class="bg-blue-600 h-4 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 45%"> 0%</div>
+                                </div>
                                 </input>
                             </div>
                         </div>
@@ -68,53 +133,58 @@
 
     var r = new Resumable({
         target: "{{url('upload-chunks')}}",
-        testChunks: true,
-        query:{_token:'{{ csrf_token() }}'} ,
+        query: {
+            _token: '{{ csrf_token() }}'
+        },
+        simultaneousUploads: 1,
+        maxChunkRetries: 10,
+        chunkSize: 1000000,
     });
 
     r.assignBrowse(document.getElementById('buttonid'));
+    r.assignDrop(document.body);
 
     // If r has file added, start uploading
     r.on('fileAdded', function(file) {
         r.upload();
+        const btn = document.getElementById('buttonid');
+        btn.classList.add("button--loading");
+        btn.innerText = "";
+        document.getElementById('loader-big').style.display = "block";
+        document.getElementById('upload-icon').style.display = 'none';
     });
 
     r.on('fileSuccess', function(file, message) {
         console.log(message);
+        //redirect to Route::get('/set-file-details/{file_id}'
+        //Make identifier the 'identifier' from the message
+        //Read message as json
+        var identifier = JSON.parse(message).identifier;
+        window.location.href = "{{url('set-file-details')}}/" + identifier;
     });
 
     r.on('fileError', function(file, message) {
         console.log(message);
+        const btn = document.getElementById('buttonid');
+        btn.classList.remove("button--loading");
+        btn.classList.add("button--error");
+        btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Error while uploading file. Please try again. </span>';
+        document.getElementById('loader-big').style.display = "none";
     });
 
+    r.on('fileProgress', (file, ratio) => {
+        document.getElementById('loader-progress').style.width = (file.progress() * 100) + "%";
+        //Get file progress with 0 decimal rounded up
 
-
-
-    /*function togglePassword() {
-        const passwordtoggle = document.getElementById('passwordtoggle');
-        const passwordbutton = document.getElementById('passwordbutton');
-        if (passwordtoggle.value == "false") {
-            document.getElementById('passwordbox').removeAttribute('readonly');
-            passwordtoggle.value = "true";
-            console.log('enabled password write');
-            passwordbutton.classList.add("bg-indigo-600");
-            passwordbutton.classList.remove("bg-gray-200");
-            //transform translate-x-5
-            passwordbutton.children[0].classList.add("translate-x-5");
-            passwordbutton.children[0].classList.remove("translate-x-0");
-        } else {
-            //change attribute to false
-            document.getElementById('passwordbox').setAttribute('readonly', 'readonly');
-            passwordtoggle.value = "false";
-            console.log('disabled password write');
-            passwordbutton.classList.add("bg-gray-200");
-            passwordbutton.classList.remove("bg-indigo-600");
-            document.getElementById('passwordbox').value = "";
-            //transform translate-x-0
-            passwordbutton.children[0].classList.add("translate-x-0");
-            passwordbutton.children[0].classList.remove("translate-x-5");
+        document.getElementById('loader-progress').innerText = Math.ceil(file.progress() * 100) + "%";
+        //If 100% then add class
+        if (Math.ceil(file.progress() * 100) == 100) {
+            //Wait a second then add class finished-animte
+            setTimeout(function() {
+                document.getElementById('loader-progress').classList.add("finished-animate");
+            }, 350);
         }
-    }*/
+    });
 </script>
 
 </html>

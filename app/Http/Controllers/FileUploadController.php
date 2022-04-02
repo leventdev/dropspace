@@ -6,6 +6,7 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,69 +14,22 @@ class FileUploadController extends Controller
 {
     //
 
-    public function uploadChunks(){
+    public function uploadChunks()
+    {
         //This is gonna be a blast to write
 
-        //This function is called from a get route
-        //Get the total number of chunks from resumableTotalChunks
+
         $totalChunks = request()->resumableTotalChunks;
-        //Get the chunk number from resumableChunkNumber
         $chunkNumber = request()->resumableChunkNumber;
-        //Get the resumableIdentifier from resumableIdentifier
         $resumableIdentifier = request()->resumableIdentifier;
-        //Get the client filename from resumableFilename
         $clientFilename = request()->resumableFilename;
 
-        //If this is the first chunk, create a new file
-        if($totalChunks == 1){
+        if ($totalChunks == 1) {
             //Save file to storage and database
-        }
-        if($chunkNumber == 1){
-            //Save file to storage
-            Storage::putFileAs('dropspace/uploads/chunks', request()->file('file'), $resumableIdentifier);
-            return response()->json(['success' => true]);
-        }
-        Storage::append('dropspace/uploads/chunks/'.$resumableIdentifier, request()->file('file')->get());
-        return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
-        //Check if this is the first chunk
-        //Storage::putFileAs('dropspace/chunks/',request()->file('file'), $chunkNumber . $clientFilename );
-    }
-
-    public function getlastChunkNumber($resumableIdentifier){
-        //Get the last chunk number
-        //Last chunk number is the number of a file called {resumableIdentifier}-{lastchunknumber}
-        //The {lastchunknumber} part is unkown at this point
-        //So we need to find a file beggining with {resumableIdentifier}- and get the last number
-        //This is the last chunk number
-        $lastChunkNumber = 0;
-        $files = Storage::files('dropspace/uploads/chunks');
-        foreach($files as $file){
-            if(Str::startsWith($file, $resumableIdentifier.'-')){
-                $lastChunkNumber = substr($file, strlen($resumableIdentifier.'-'));
-            }
-        }
-        return $lastChunkNumber;
-    }
-
-    public function uploadFile()
-    {
-        try {
-            //This function saves the file to the storage, and saves the file's data to the database.
-            //$uploadedFile becomes the file to be saves to storage
-            $uploadedFile = request()->file('file');
-            //$file is the data of the file that is saved in the database
-            $file = new File();
-            //$file->file_identifier is the unique identifier of the file, only one file can have the same identifier
-            $file->file_identifier = Str::random(12);
-            while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
-                $file->file_identifier = Str::random(12);
-            }
-            //Generic data, used for the database and returning the file as it was uploaded (same name)
-            $file->name = $uploadedFile->getClientOriginalName();
-            $file->extension = $uploadedFile->getClientOriginalExtension();
-            $file->size = $uploadedFile->getSize();
-            //$file->path is the path of the file, this is the path of the file in the storage, and looks like {file_identifier}.{extension}
-            $file->path = $file->file_identifier . '.' . $file->extension;
+            $file = new File;
+            $file->name = $clientFilename;
+            $file->extension = pathinfo($clientFilename, PATHINFO_EXTENSION);
+            $file->size = request()->resumableTotalSize;
             if (request()->hasHeader('CF-Connecting-IP')) {
                 //The IP adress of the uploader is saved in the database, when the application is set up with Cloudflare, this IP adress is changed to Cloudflare's IP adress, but the IP adress of the client is passed through in a header, that's called 'CF-Connecting-IP'
                 $file->uploader_ip = request()->header('CF-Connecting-IP');
@@ -83,38 +37,103 @@ class FileUploadController extends Controller
                 //If the application is not set up with Cloudflare, getting the IP adress of the client is grabbed straight from the request
                 $file->uploader_ip = request()->ip();
             }
-            //This saves the file to the storage, this is where the file is actually saved. This is not a publically accessible path, but the file can be returned from the storage.
-            Storage::putFileAs('dropspace/uploads/', $uploadedFile, $file->path);
-            $file->finished_uploading = false;
-            //This saves the file's data to the database
+            $file->file_identifier = Str::random(12);
+            while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
+                $file->file_identifier = Str::random(12);
+            }
+            Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
+            $file->path = $file->file_identifier . '.' . $file->extension;
             $file->save();
-            return redirect('/set-file-details/'.$file->file_identifier);
-        } 
-        catch (Exception $e) {
-            //If an error occurs, the error is returned to the user
-            return view('download-error', ['error' => $e->getMessage() . ". Contact admin."]);
+            return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
         }
+        //If this is the first chunk, create a new file
+        if ($chunkNumber == 1) {
+            //Save file to storage
+            Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
+        } else {
+            Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
+        }
+        //If the chunk number is the same as the total chunks, combine the chunks and save the file
+        if ($chunkNumber == $totalChunks) {
+            //Create new file
+            $file = new File;
+            $file->name = $clientFilename;
+            //get extension from clientFilename
+            $file->extension = pathinfo($clientFilename, PATHINFO_EXTENSION);
+            $file->size = request()->resumableTotalSize;
+            if (request()->hasHeader('CF-Connecting-IP')) {
+                //The IP adress of the uploader is saved in the database, when the application is set up with Cloudflare, this IP adress is changed to Cloudflare's IP adress, but the IP adress of the client is passed through in a header, that's called 'CF-Connecting-IP'
+                $file->uploader_ip = request()->header('CF-Connecting-IP');
+            } else {
+                //If the application is not set up with Cloudflare, getting the IP adress of the client is grabbed straight from the request
+                $file->uploader_ip = request()->ip();
+            }
+
+            //generate file_identifier
+            $file->file_identifier = Str::random(12);
+            while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
+                $file->file_identifier = Str::random(12);
+            }
+            //make empty file in storage
+
+
+
+            Storage::put('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, '');
+            $fp = fopen('../storage/app/dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'w'); //opens file in append mode  
+            for ($i = 1; $i <= $totalChunks; $i++) {
+                //Get the chunk file
+                $chunkFile = Storage::get('dropspace/chunks/' . $resumableIdentifier . '/' . $i . '-' . $resumableIdentifier);
+                //Get client filename
+                $clientFilename = request()->resumableFilename;
+                //Storage::append('dropspace/chunks/'.$resumableIdentifier.'-'.$clientFilename, $chunkFile, null);
+                fwrite($fp, $chunkFile);
+                Log::info('Appended chunk: ' . $i . ' from file:' . 'dropspace/chunks/' . $resumableIdentifier . '/' . $i . '-' . $resumableIdentifier);
+                //Delete the chunk file
+                //Storage::delete('dropspace/chunks/'.$resumableIdentifier.'/'.$i.'-'.$resumableIdentifier);
+            }
+            fclose($fp);
+            Storage::deleteDirectory('dropspace/chunks/'.$resumableIdentifier);
+            Storage::move('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+            $file->path = $file->file_identifier . '.' . $file->extension;
+            $file->save();
+            return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
+        }
+        return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
     }
 
-    public function setFileDetails($id){
+    function byteConvert($bytes)
+{
+    if ($bytes == 0)
+        return "0.00 B";
+
+    $s = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+    $e = floor(log($bytes, 1024));
+
+    return round($bytes/pow(1024, $e), 2).$s[$e];
+}
+
+    public function setFileDetails($id)
+    {
         //This function is called when the user wants to set the file's details, this is the view that is shown to the user
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
             //If the file doesn't exist, the user is redirected to the error page
             return view('download-error', ['error' => "File doesn't exist."]);
         }
-        if($file->finished_uploading == true){
+        if ($file->finished_uploading == true) {
             return view('download-error', ['error' => "This file has already been uploaded before, you can't modify the settings."]);
         }
-        return view('upload-settings', ['fileName' => $file->name, 'uploadDate' => $file->created_at, 'fileID' => $file->file_identifier]);
+        //Filesize in human readable format from $file->size
+        return view('upload-settings', ['fileName' => $file->name, 'uploadDate' => $file->created_at, 'fileID' => $file->file_identifier, 'size' => $this->byteConvert($file->size)]);
     }
 
-    public function saveFileDetails($id, Request $request){
+    public function saveFileDetails($id, Request $request)
+    {
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
             return view('download-error', ['error' => "File doesn't exist."]);
         }
-        if($file->finished_uploading == true){
+        if ($file->finished_uploading == true) {
             return view('download-error', ['error' => "This file has already been uploaded before, you can't modify the settings."]);
         }
         //Saves the file's additional details to the database
@@ -124,7 +143,7 @@ class FileUploadController extends Controller
         //cases for the expiry date, never, 1 week, 1 month, 1 year
         if ($expiryDate == "never") {
             $file->expiry_date = null;
-        } elseif ($expiryDate == "1-day"){
+        } elseif ($expiryDate == "1-day") {
             $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 day'));
         } elseif ($expiryDate == "1-week") {
             $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 week'));
@@ -133,7 +152,7 @@ class FileUploadController extends Controller
         } elseif ($expiryDate == "1-year") {
             $file->expiry_date = date('Y-m-d H:i:s', strtotime('+1 year'));
         }
-        if(request()->passbool == "true"){
+        if (request()->passbool == "true") {
             $file->is_protected = true;
             $file->password = sha1($request->input('password'));
         } else {
@@ -142,15 +161,14 @@ class FileUploadController extends Controller
         }
         $file->finished_uploading = true;
         $file->save();
-        if($file->is_protected){
+        if ($file->is_protected) {
             //return redirect to download with password
             //This redirects the user to the download page, with the file's identifier and the password as parameters
-            return redirect('/download/'.$file->file_identifier . '?hash='. $file->password);
-        }
-        else{
+            return redirect('/download/' . $file->file_identifier . '?hash=' . $file->password);
+        } else {
             //return redirect to download without password
             //This redirects the user to the download page, with the file's identifier.
-            return redirect('/download/'.$file->file_identifier);
+            return redirect('/download/' . $file->file_identifier);
         }
     }
 }
