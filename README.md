@@ -101,7 +101,7 @@ Add command to crontab
 Replace /var/www/dropspace to DropSpace's location
 
 ```
-*/5 * * * * cd /var/www/dropspace && php artisan schedule:run >> /dev/null 2>&1
+*/5 * * * * cd /var/www/dropspace && php artisan schedule:run
 
 ```
 
