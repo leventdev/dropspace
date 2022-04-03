@@ -97,6 +97,16 @@ And finish off by building the app
 npm run prod
 ```
 
+Add command to crontab
+Replace /var/www/dropspace to DropSpace's location
+
+```
+*/5 * * * * cd /var/www/dropspace && php artisan schedule:run >> /dev/null 2>&1
+
+```
+
+
+
 ## Security Vulnerabilities
 
 If you discover a security vulnerability within DropSpace, please make a pull request and use the `security  vulnerability` tag.
