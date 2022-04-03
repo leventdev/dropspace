@@ -17,7 +17,7 @@ Route::get('/', function () {
     return view('upload');
 });
 
-Route::post('/upload-cli', 'App\Http\Controllers\FileUploadController@uploadCLIChunks');
+Route::post('/upload-cli', 'App\Http\Controllers\FileUploadController@uploadCLIChunks')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
 Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks');
 //Route to updating the expiry of a file
 Route::post('/update-expiry', 'App\Http\Controllers\FileDownloadController@updateExpiry');
