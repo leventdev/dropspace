@@ -14,6 +14,11 @@ class FileUploadController extends Controller
 {
     //
 
+    public function uploadCLIChunks(){
+        Log::info('Received chunk from CLI: ' . request()->get('chunkNumber'));
+        return response()->json(['success' => true]);
+    }
+
     public function uploadChunks()
     {
         //This is gonna be a blast to write
