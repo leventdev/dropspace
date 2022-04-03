@@ -97,7 +97,7 @@ And finish off by building the app
 npm run prod
 ```
 
-Add command to crontab
+Add command to crontab  
 Replace /var/www/dropspace to DropSpace's location
 
 ```
