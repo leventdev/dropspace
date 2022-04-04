@@ -17,7 +17,7 @@ class FileUploadController extends Controller
     public function uploadCLIChunks(){
         Log::info('Received chunk from CLI: ' . request()->get('chunkNumber'));
         //Save file to disk named "{chunkNumber}-dropspace-cli.part"
-        Storage::put('dropspace/temp/', request()->file('file')->get());
+        Storage::put('dropspace/temp/', request()->file('file'));
         return 'Successfully uploaded chunk: ' . request()->get('chunkNumber');
     }
 
