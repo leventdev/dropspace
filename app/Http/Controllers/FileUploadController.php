@@ -96,6 +96,7 @@ class FileUploadController extends Controller
                 Log::info('Uploading file to S3');
                 Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, fopen('../storage/app/dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename, 'r+'));
                 Log::info('Uploaded file to S3');
+                Storage::delete('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
             } else {
                 Log::info('Moving file to local storage');
                 Storage::move('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
