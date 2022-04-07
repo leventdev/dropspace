@@ -13,6 +13,8 @@ return [
     |
     */
 
+    //Do not change this to 's3' if you plan to use S3 storage, change the 'ds_storage_type' option in config/dropspace.php instead!
+    //Changing this to 's3' will likely cause chunked file uploads to fail.
     'default' => env('FILESYSTEM_DISK', 'local'),
 
     /*
