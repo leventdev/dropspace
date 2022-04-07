@@ -37,6 +37,37 @@
 
 <body class="h-full">
     <style>
+        .button--loading-big .button__text {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .button--loading-big::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            margin: auto;
+            margin-bottom: 6rem;
+            border: 7px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 100%;
+            animation: button-loading-spinner-big 0.8s ease infinite;
+        }
+        @keyframes button-loading-spinner-big {
+            from {
+                transform: rotate(0turn);
+            }
+
+            to {
+                transform: rotate(1turn);
+            }
+        }
+
         .danger-shake {
             /* Start the shake animation and make the animation last for 0.5 seconds */
             animation: shake 3.5s;
@@ -187,8 +218,9 @@
                 <div class="sm:ml-6 self-center">
                     <div class="sm:border-l sm:border-gray-200 sm:pl-6">
                         <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-                            <a href="{{ $fileURL }}" onclick="manualRefresh()" download class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                            <a onclick="downloadProcessing()" style="cursor: pointer;" class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <span id="spinner-waiting" style="display: none; height: 3rem;" class="button--loading-big"></span>
+                                <svg id="doc-svg" xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 <span class="mt-2 block text-sm font-medium text-gray-50"> {{ $fileName }}.{{ $fileExtension }} </span>
@@ -222,7 +254,7 @@
                                 </div>
                             </div>
                             <!-- Check if DROPSPACE_MAIL_ENABLED is true-->
-                            <?php if($canEmail == true) { ?>
+                            <?php if(config('dropspace.ds_email_enabled')) { ?>
                             <label for="share" class="block text-sm font-medium mt-4 text-gray-100">Send link in email</label>
                             <div class="mt-1 relative flex items-center">
                                 <input type="email" name="share" id="sharemail" placeholder="email@domain.com" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">
@@ -262,6 +294,23 @@
     window.onload = function() {
         updateExpiry();
     };
+
+    function downloadProcessing(){
+        document.getElementById('doc-svg').style.display = 'none';
+        document.getElementById('spinner-waiting').style.display = 'block';
+        var link = document.createElement("a");
+        link.download = '{{ $fileURL }}';
+        link.href = '{{ $fileURL }}';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+        //Hacky solution, but if it works, it works, it's just UI anyways
+        setTimeout(function() {
+            document.getElementById('doc-svg').style.display = 'block';
+            document.getElementById('spinner-waiting').style.display = 'none';
+        }, 5000);
+    }
 
     function changeAngle() {
         angle = (angle + 5) % 360;

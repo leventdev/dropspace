@@ -685,6 +685,9 @@ select {
 .mt-2 {
   margin-top: 0.5rem;
 }
+.mb-4 {
+  margin-bottom: 1rem;
+}
 .mt-4 {
   margin-top: 1rem;
 }
@@ -693,9 +696,6 @@ select {
 }
 .ml-16 {
   margin-left: 4rem;
-}
-.mb-1 {
-  margin-bottom: 0.25rem;
 }
 .mb-0 {
   margin-bottom: 0px;
@@ -1034,6 +1034,12 @@ select {
 }
 .pt-0 {
   padding-top: 0px;
+}
+.pb-4 {
+  padding-bottom: 1rem;
+}
+.pb-12 {
+  padding-bottom: 3rem;
 }
 .text-left {
   text-align: left;

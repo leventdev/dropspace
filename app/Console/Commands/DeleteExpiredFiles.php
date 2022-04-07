@@ -38,7 +38,7 @@ class DeleteExpiredFiles extends Command
             if ($file->expiry_date != null) {
                 $date = Carbon::parse($file->expiry_date);
                 if ($date->isPast()) {
-                    Storage::delete('dropspace/uploads/' . $file->path);
+                    Storage::disk(config('dropspace.ds_storage_type'))->delete('dropspace/uploads/' . $file->path);
                     $file->deleted_for_expiry = 1;
                     $file->save();
                     Log::info('Deleted file: ' . $file->path . ' for expiry (date): ' . $file->expiry_date);
@@ -46,7 +46,7 @@ class DeleteExpiredFiles extends Command
             }
             if($file->download_limit != 0) {
                 if($file->download_count >= $file->download_limit) {
-                    Storage::delete('dropspace/uploads/' . $file->path);
+                    Storage::disk(config('dropspace.ds_storage_type'))->delete('dropspace/uploads/' . $file->path);
                     $file->deleted_for_expiry = 1;
                     $file->save();
                     Log::info('Deleted file: ' . $file->path . ' for reaching download limit: ' . $file->download_limit);
