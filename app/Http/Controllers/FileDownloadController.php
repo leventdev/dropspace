@@ -101,7 +101,14 @@ class FileDownloadController extends Controller
                     //If the hash of the password is correct, the file is returned
                     $file->download_count = $file->download_count + 1;
                     $file->save();
-                    return Storage::download('dropspace/uploads/' . $file->path, $file->name);
+                    if ($file->ds_storage_type == 'local') {
+                        return response()->download('dropspace/uploads/' . $file->path, $file->name);
+                    } else {
+                        //return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $file->name);
+                        $tempFile = tempnam(sys_get_temp_dir(), $file->name);
+                        copy(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $tempFile);
+                        return response()->download($tempFile, $file->name);
+                    }
                 } else {
                     //If the hash of the password is incorrect, the user is redirected to an error page
                     return view('download-error', ['error' => 'An error occured with the authorization hash of this download. Please try again or contact the admin.']);
@@ -110,7 +117,14 @@ class FileDownloadController extends Controller
                 //If the file is not protected, the file is returned
                 $file->download_count = $file->download_count + 1;
                 $file->save();
-                return Storage::download('dropspace/uploads/' . $file->path, $file->name);
+                if ($file->ds_storage_type == 'local') {
+                    return response()->download('dropspace/uploads/' . $file->path, $file->name);
+                } else {
+                    //return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $file->name);
+                    $tempFile = tempnam(sys_get_temp_dir(), $file->name);
+                    copy(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $tempFile);
+                    return response()->download($tempFile, $file->name);
+                }
             }
         } catch (Exception $e) {
             //If an error occurs, the user is redirected to an error page

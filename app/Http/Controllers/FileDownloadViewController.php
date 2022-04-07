@@ -39,7 +39,13 @@ class FileDownloadViewController extends Controller
                 //Load file data into $file
                 $file = File::where('file_identifier', $file_id)->first();
                 //Check if file is saved in storage
-                if (Storage::exists('dropspace/uploads/' . $file->path)) {
+                $fileExists = false;
+                if(config('dropspace.ds_storage_type') == 's3') {
+                    $fileExists = Storage::disk('s3')->exists('dropspace/uploads/' . $file->path);
+                } else {
+                    $fileExists = Storage::disk('local')->exists('dropspace/uploads/' . $file->path);
+                }
+                if ($fileExists == true) {
                     //Check if the file is protected
                     if ($file->is_protected == 1) {
                         //If the file is protected, check if the request has a hash
@@ -119,12 +125,7 @@ class FileDownloadViewController extends Controller
                                     }
                                 }
                                 $curlCommand = 'curl "'.$downloadURL.'" --output ' . $file->name;
-                                $canEmail = false;
-                                if (env('DROPSPACE_MAIL_ENABLED') == true) {
-                                    $canEmail = true;
-                                }
-
-                                return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => true, 'hash' => $file->password, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'downloadInDanger' => $downloadInDanger, 'dateInDanger' => $dateInDanger, 'fileShareCURL' => $curlCommand, 'canEmail' => $canEmail]);
+                                return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => true, 'hash' => $file->password, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'downloadInDanger' => $downloadInDanger, 'dateInDanger' => $dateInDanger, 'fileShareCURL' => $curlCommand]);
                             } else {
                                 //If the hash is incorrect, return the download error view
                                 if (request()->has('hash')) {
@@ -216,14 +217,7 @@ class FileDownloadViewController extends Controller
                             }
                         }
                         $curlCommand = 'curl "'.$downloadURL.'" --output ' . $file->name;
-                        //Return the value of enviroment variable "DROPSPACE_MAIL_ENABLED" as a variable $canEmail
-                        $canEmail = false;
-                        if (env('DROPSPACE_MAIL_ENABLED') == true) {
-                            $canEmail = true;
-                        }
-
-
-                        return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => false, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'dateInDanger' => $dateInDanger, 'downloadInDanger' => $downloadInDanger, 'fileShareCURL' => $curlCommand, 'canEmail' => $canEmail]);
+                        return view('download', ['fileNameTag' => $file->name, 'fileURL' => $downloadURL, 'fileName' => $shortName, 'fileExtension' => $file->extension, 'uploadDate' => $file->created_at, 'fileShareURL' => secure_url('/download/' . $file->file_identifier), 'fileID' => $file->file_identifier, 'password_protected' => false, 'canExpire' => $canExpire, 'expiryType' => $expiryType, 'expiryDate' => $expiryDate, 'downloadLimitAmount' => $downloadLimitAmount, 'color1download' => $color1download, 'color2download' => $color2download, 'color1date' => $color1date, 'color2date' => $color2date, 'dateInDanger' => $dateInDanger, 'downloadInDanger' => $downloadInDanger, 'fileShareCURL' => $curlCommand]);
                     }
                 } else {
                     //If file is not saved in storage, return error page
