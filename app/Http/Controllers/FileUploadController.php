@@ -94,7 +94,7 @@ class FileUploadController extends Controller
             Log::info('Deleted chunks directory: dropspace/chunks/'.$resumableIdentifier);
             if(config('dropspace.ds_storage_type') == 's3'){
                 Log::info('Uploading file to S3');
-                Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, fopen('../storage/app/dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename, 'r+'));
+                Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, Storage::get('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename));
                 Log::info('Uploaded file to S3');
                 Storage::delete('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
             } else {
