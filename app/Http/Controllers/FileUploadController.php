@@ -119,11 +119,11 @@ class FileUploadController extends Controller
             Log::info('Generating MD5 hash of file');
             if(config('dropspace.ds_storage_type') == 's3'){
                 $mdStream = Storage::disk('s3')->readStream('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension);
-                $md5 = md5(stream_get_contents($mdStream));
+                $md5 = hash_update_stream(hash_init('md5'), $mdStream);
                 Log::info('Calculated MD5 hash of file: '.$md5);
             } else {
                 $mdStream = Storage::readStream('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
-                $md5 = md5(stream_get_contents($mdStream));
+                $md5 = hash_update_stream(hash_init('md5'), $mdStream);
                 Log::info('Calculated MD5 hash of file: '.$md5);
             }
             Log::info('Finished operation');
