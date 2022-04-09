@@ -218,7 +218,7 @@
             const btn = document.getElementById('buttonid');
             btn.classList.remove("button--loading");
             btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Checksum verification failed. Please try uploading again. </span>';
-            document.getElementById('loader-big').style.display = "none";   
+            document.getElementById('loader-big').style.display = "none";
         }
     }
 

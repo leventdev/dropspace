@@ -32,8 +32,12 @@ class ClearUploads extends Command
     {
         $files = File::all();
         foreach ($files as $file) {
-            Storage::delete('dropspace/uploads/' . $file->path);
-            $this->info('Deleted file: ' . $file->name . ' saved at ' . $file->path . '.');
+            if(config('dropspace.ds_storage_type') == 's3') {
+                Storage::disk('s3')->delete('dropspace/uploads/' . $file->path);
+            } else {
+                Storage::delete('dropspace/uploads/' . $file->path);
+            }
+            $this->info('['.config('dropspace.ds_storage_type').'] Deleted file: ' . $file->name . ' saved at ' . $file->path . '.');
         }
         DB::table('files')->delete();
         $this->info(' ');

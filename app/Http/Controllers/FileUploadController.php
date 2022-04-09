@@ -33,6 +33,7 @@ class FileUploadController extends Controller
 
         if ($totalChunks == 1) {
             //Save file to storage and database
+            Log::info('Received 1 chunk long file. Saving file.');
             $file = new File;
             $file->name = $clientFilename;
             $file->extension = pathinfo($clientFilename, PATHINFO_EXTENSION);
@@ -48,21 +49,22 @@ class FileUploadController extends Controller
             while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
                 $file->file_identifier = Str::random(12);
             }
+            Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
             Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
             $file->path = $file->file_identifier . '.' . $file->extension;
+            Log::info('Saved file to storage. Saving file [' . $file->file_identifier . '] to database.');
             $file->save();
+            Log::info('Saved file to database. Sending response.');
             return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
         }
         //If this is the first chunk, create a new file
-        if ($chunkNumber == 1) {
-            //Save file to storage
-            Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
-        } else {
-            Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
-        }
+        //Save file to storage
+        Log::info('Received chunk [' . $chunkNumber . '] of [' . $totalChunks . '] for file [' . $resumableIdentifier . ']. Saving chunk.');
+        Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
         //If the chunk number is the same as the total chunks, combine the chunks and save the file
         if ($chunkNumber == $totalChunks) {
             //Create new file
+            Log::info('Received last chunk of [' . $totalChunks . '] for file [' . $resumableIdentifier . ']. Generating database entry.');
             $file = new File;
             $file->name = $clientFilename;
             //get extension from clientFilename
@@ -82,10 +84,10 @@ class FileUploadController extends Controller
                 $file->file_identifier = Str::random(12);
             }
             //make empty file in storage
-
-
+            Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
 
             Storage::put('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, '');
+            Log::info('Created temp file: ' . $resumableIdentifier . '-' . $clientFilename);
             $fp = fopen('../storage/app/dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'w'); //opens file in append mode  
             for ($i = 1; $i <= $totalChunks; $i++) {
                 //Get the chunk file
@@ -99,12 +101,37 @@ class FileUploadController extends Controller
                 //Storage::delete('dropspace/chunks/'.$resumableIdentifier.'/'.$i.'-'.$resumableIdentifier);
             }
             fclose($fp);
+            Log::info('Finished appending chunks to file: ' . $resumableIdentifier . '-' . $clientFilename);
             Storage::deleteDirectory('dropspace/chunks/'.$resumableIdentifier);
-            Storage::move('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+            Log::info('Deleted chunks directory: dropspace/chunks/'.$resumableIdentifier);
+            if(config('dropspace.ds_storage_type') == 's3'){
+                Log::info('Uploading file to S3');
+                //Updated using streams
+
+                $stream = Storage::disk('local')->readStream('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
+                Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, $stream);
+
+                //End using streams
+                Log::info('Uploaded file to S3');
+            } else {
+                Log::info('Moving file to local storage');
+                Storage::move('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+                Log::info('Moved file to local storage');
+            }
             $file->path = $file->file_identifier . '.' . $file->extension;
             $file->save();
+            Log::info('Saved file to database');
             //Make MD5 hash of file
-            $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+            Log::info('Generating MD5 hash of file');
+            if(config('dropspace.ds_storage_type') == 's3'){
+                $md5 = md5_file('../storage/app/dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
+                Log::info('Calculated MD5 hash of file: '.$md5);
+                Storage::delete('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
+            } else {
+                $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+                Log::info('Calculated MD5 hash of file: '.$md5);
+            }
+            Log::info('Finished uploading file '. $file->file_identifier . '.' . $file->extension);
             return response()->json(['success' => true, 'identifier' => $file->file_identifier,'md5' => $md5]);
         }
         return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
