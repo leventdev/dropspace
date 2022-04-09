@@ -106,7 +106,6 @@ class FileUploadController extends Controller
 
                 //End using streams
                 Log::info('Uploaded file to S3');
-                Storage::delete('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
             } else {
                 Log::info('Moving file to local storage');
                 Storage::move('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
@@ -118,15 +117,14 @@ class FileUploadController extends Controller
             //Make MD5 hash of file
             Log::info('Generating MD5 hash of file');
             if(config('dropspace.ds_storage_type') == 's3'){
-                $mdStream = Storage::disk('s3')->readStream('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension);
-                $md5 = md5(stream_get_contents($mdStream));
+                $md5 = md5_file('../storage/app/dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
                 Log::info('Calculated MD5 hash of file: '.$md5);
+                Storage::delete('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
             } else {
-                $mdStream = Storage::readStream('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
-                $md5 = md5(stream_get_contents($mdStream));
+                $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
                 Log::info('Calculated MD5 hash of file: '.$md5);
             }
-            Log::info('Finished operation');
+            Log::info('Finished uploading file '. $file->file_identifier . '.' . $file->extension);
             return response()->json(['success' => true, 'identifier' => $file->file_identifier,'md5' => $md5]);
         }
         return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
