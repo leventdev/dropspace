@@ -26,6 +26,7 @@ class FileUploadController extends Controller
 
         if ($totalChunks == 1) {
             //Save file to storage and database
+            Log::info('Received 1 chunk long file. Saving file.');
             $file = new File;
             $file->name = $clientFilename;
             $file->extension = pathinfo($clientFilename, PATHINFO_EXTENSION);
@@ -41,17 +42,22 @@ class FileUploadController extends Controller
             while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
                 $file->file_identifier = Str::random(12);
             }
+            Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
             Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
             $file->path = $file->file_identifier . '.' . $file->extension;
+            Log::info('Saved file to storage. Saving file [' . $file->file_identifier . '] to database.');
             $file->save();
+            Log::info('Saved file to database. Sending response.');
             return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
         }
         //If this is the first chunk, create a new file
         //Save file to storage
+        Log::info('Received chunk [' . $chunkNumber . '] of [' . $totalChunks . '] for file [' . $resumableIdentifier . ']. Saving chunk.');
         Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
         //If the chunk number is the same as the total chunks, combine the chunks and save the file
         if ($chunkNumber == $totalChunks) {
             //Create new file
+            Log::info('Received last chunk of [' . $totalChunks . '] for file [' . $resumableIdentifier . ']. Generating database entry.');
             $file = new File;
             $file->name = $clientFilename;
             //get extension from clientFilename
@@ -71,8 +77,7 @@ class FileUploadController extends Controller
                 $file->file_identifier = Str::random(12);
             }
             //make empty file in storage
-
-
+            Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
 
             Storage::put('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, '');
             Log::info('Created temp file: ' . $resumableIdentifier . '-' . $clientFilename);
@@ -97,7 +102,6 @@ class FileUploadController extends Controller
                 //Updated using streams
 
                 $stream = Storage::disk('local')->readStream('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
-
                 Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, $stream);
 
                 //End using streams
@@ -112,11 +116,14 @@ class FileUploadController extends Controller
             $file->save();
             Log::info('Saved file to database');
             //Make MD5 hash of file
+            Log::info('Generating MD5 hash of file');
             if(config('dropspace.ds_storage_type') == 's3'){
-                $md5 = md5(Storage::disk('s3')->get('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension));
+                $mdStream = Storage::disk('s3')->readStream('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension);
+                $md5 = md5(stream_get_contents($mdStream));
                 Log::info('Calculated MD5 hash of file: '.$md5);
             } else {
-                $md5 = md5(Storage::get('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension));
+                $mdStream = Storage::readStream('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+                $md5 = md5(stream_get_contents($mdStream));
                 Log::info('Calculated MD5 hash of file: '.$md5);
             }
             Log::info('Finished operation');
