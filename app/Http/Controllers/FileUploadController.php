@@ -61,9 +61,9 @@ class FileUploadController extends Controller
             $file->save();
             Log::info('Saved file to database. Sending response.');
             if(config('dropspace.ds_storage_type') == 's3'){
-                $md5 = md5_file('../storage/app/dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
+                $md5 = md5_file('../storage/app/dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
                 Log::info('Calculated MD5 hash of file: '.$md5);
-                Storage::delete('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
+                Storage::delete('dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
             } else {
                 $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
                 Log::info('Calculated MD5 hash of file: '.$md5);
