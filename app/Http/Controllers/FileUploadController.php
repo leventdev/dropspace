@@ -50,12 +50,32 @@ class FileUploadController extends Controller
                 $file->file_identifier = Str::random(12);
             }
             Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
-            Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
+            if(config('dropspace.ds_storage_type') == 's3'){
+                Log::info('Uploading file to S3');
+                //Updated using streams
+                Storage::putFileAs('dropspace/temp/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
+                $stream = Storage::disk('local')->readStream('dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
+                Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, $stream);
+                //End using streams
+                Log::info('Uploaded file to S3');
+            } else {
+                Log::info('Moving file to local storage');
+                Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
+                Log::info('Moved file to local storage');
+            }
             $file->path = $file->file_identifier . '.' . $file->extension;
             Log::info('Saved file to storage. Saving file [' . $file->file_identifier . '] to database.');
             $file->save();
             Log::info('Saved file to database. Sending response.');
-            return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
+            if(config('dropspace.ds_storage_type') == 's3'){
+                $md5 = md5_file('../storage/app/dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
+                Log::info('Calculated MD5 hash of file: '.$md5);
+                Storage::delete('dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
+            } else {
+                $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+                Log::info('Calculated MD5 hash of file: '.$md5);
+            }
+            return response()->json(['success' => true, 'identifier' => $file->file_identifier, 'md5' => $md5]);
         }
         //If this is the first chunk, create a new file
         //Save file to storage
