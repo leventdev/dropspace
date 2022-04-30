@@ -85,123 +85,200 @@
             </div>
         </div>
     </div>
+    <div id="sharecontainer" style="display: none;" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <!-- This element is to trick the browser into centering the modal contents. -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div id="sharemain" class="relative inline-block align-bottom bg-white rounded-lg px-2 pt-2 pb-2 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full sm:p-4">
+                <div class="">
+                    <div class="">
+                        <div>
+                            <div class="">
+                                <div class="mx-auto lg:grid lg:grid-cols-2 lg:gap-x-8">
+                                    <!-- Product details -->
+                                    <div class="">
+                                        <div class="mt-4">
+                                            <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">ShareCode</h1>
+                                        </div>
+
+                                        <section aria-labelledby="information-heading" class="mt-4">
+                                            <div class="mt-4">
+                                                <p class="text-base text-gray-500">Enter this six digit code on a device at <a class="underline" target="_blank" href="{{secure_url('/sharecode')}}">{{secure_url('/sharecode')}}</a></p>
+                                                <?php if($password_protected == true) { ?>
+                                                <p class="mt-4 text-base text-gray-500">That's all you need to share, the password is automagically passed on.</p>
+                                                <?php } ?>
+                                                <p class="mt-4 text-base text-gray-500">Keep in mind that this code will expire thirty minutes after creation or the first use, whichever comes first.</p>
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                    <!-- Product image -->
+                                    <div class="lg:mt-0 lg:col-start-2 lg:row-span-2 lg:self-center">
+                                        <section aria-labelledby="information-heading" class="mt-4">
+                                            <div class="mt-4 grid grid-cols-1">
+                                                <form class="grid grid-cols-6">
+                                                    <input id="sc-1" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-2" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-3" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-4" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-5" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-6" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                </form>
+                                                <button onclick="copyShareCode()" id="copy-share-code" type="button" class="justify-self-center mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Copy to clipboard</button>
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                    <!-- Product form -->
+                                    <div class="mt-10 lg:max-w-lg lg:col-start-1 lg:row-start-2 lg:self-end">
+                                        <section aria-labelledby="options-heading">
+                                            <div class="mt-10">
+                                                <button type="button" onclick="hideShare()" class="w-full bg-blue-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-blue-500">Back to download</button>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <style>
         .fade-out {
-	-webkit-animation: fade-out 0.4s ease-out both;
-	        animation: fade-out 0.4s ease-out both;
-}
-@-webkit-keyframes fade-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes fade-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
+            -webkit-animation: fade-out 0.4s ease-out both;
+            animation: fade-out 0.4s ease-out both;
+        }
+
+        @-webkit-keyframes fade-out {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fade-out {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
 
         .scale-out-bottom {
-	-webkit-animation: scale-out-bottom 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
-	        animation: scale-out-bottom 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
-}
-@-webkit-keyframes scale-out-bottom {
-  0% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-  100% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-}
-@keyframes scale-out-bottom {
-  0% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-  100% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-}
+            -webkit-animation: scale-out-bottom 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+            animation: scale-out-bottom 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+        }
+
+        @-webkit-keyframes scale-out-bottom {
+            0% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+
+            100% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes scale-out-bottom {
+            0% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+
+            100% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+        }
 
         .fade-in {
-	-webkit-animation: fade-in 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
-	        animation: fade-in 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
-}
-@-webkit-keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+            -webkit-animation: fade-in 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+            animation: fade-in 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+        }
+
+        @-webkit-keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
 
         .scale-in-bottom {
-	-webkit-animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-	        animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-}
-@-webkit-keyframes scale-in-bottom {
-  0% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-  100% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-}
-@keyframes scale-in-bottom {
-  0% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-  100% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
-    -webkit-transform-origin: 50% 100%;
-            transform-origin: 50% 100%;
-    opacity: 1;
-  }
-}
+            -webkit-animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+            animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+        }
 
+        @-webkit-keyframes scale-in-bottom {
+            0% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes scale-in-bottom {
+            0% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+                opacity: 1;
+            }
+        }
     </style>
     <style>
         .button--loading-big .button__text {
@@ -439,17 +516,25 @@
                                 </div>
                             </div>
 
-                            <label for="curl" class="block text-sm font-medium mt-4 text-gray-100">Share QR code</label>
-                            <div class="mt-1 relative flex items-center">
-                                <button type="button" onclick="displayQR()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <!-- Heroicon name: solid/mail -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                                    </svg>
-                                    Generate QR
-                                </button>
+                            <label for="curl" class="block text-sm font-medium mt-4 text-gray-100">Quick share</label>
+                            <div class="grid grid-cols-2">
+                                <div class="col-start-1 mt-1 relative flex items-center">
+                                    <button type="button" onclick="displayQR()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                        </svg>
+                                        Generate QR
+                                    </button>
+                                </div>
+                                <div class="col-start-2 mt-1 relative flex items-center">
+                                    <button type="button" onclick="displayShare()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                        </svg>
+                                        Generate ShareCode
+                                    </button>
+                                </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -462,6 +547,8 @@
     </script>
 </body>
 <script>
+    var sharecode;
+
     function displayQR() {
         const qrback = document.getElementById('qrcontainer');
         qrback.style.display = 'block';
@@ -473,23 +560,96 @@
         qr.classList.add('scale-in-bottom');
     }
 
-    function hideqr()
-    {
+    function hideqr() {
         const qr = document.getElementById('qrmain');
         const qrback = document.getElementById('qrcontainer');
         qr.classList.remove('scale-in-bottom');
         qr.classList.add('scale-out-bottom');
         setTimeout(function() {
             qrback.classList.remove('fade-in');
-        qrback.classList.add('fade-out');
-        setTimeout(function() {
+            qrback.classList.add('fade-out');
+            setTimeout(function() {
 
-            qrback.style.display = 'none';
-            qrback.style.opacity = '1';
-            qr.classList.remove('scale-out-bottom');
-        }, 400);
+                qrback.style.display = 'none';
+                qrback.style.opacity = '1';
+                qr.classList.remove('scale-out-bottom');
+            }, 400);
         }, 500);
     }
+
+    function displayShare() {
+        if (sharecode == null) {
+            //Make post call to generate sharecode to route {{secure_url('generate-sharecode')}}
+            sharecode = 'loading';
+            const Url = "{{secure_url('generate-sharecode')}}";
+            const data = {
+                file_id: "{{ $fileID }}",
+                _token: "{{ csrf_token() }}",
+                <?php if ($password_protected == true) { ?>
+                    <?php echo 'hash: "' . $hash.'"'; ?>
+                <?php } ?>
+            }
+            $.post(Url, data, function(response) {
+                async: false;
+                console.log(response);
+                sharecode = response.code;
+                const sc_1 = document.getElementById('sc-1');
+                const sc_2 = document.getElementById('sc-2');
+                const sc_3 = document.getElementById('sc-3');
+                const sc_4 = document.getElementById('sc-4');
+                const sc_5 = document.getElementById('sc-5');
+                const sc_6 = document.getElementById('sc-6');
+                //split sharecode into 6 characters
+                const sc_1_char = sharecode.substring(0, 1);
+                const sc_2_char = sharecode.substring(1, 2);
+                const sc_3_char = sharecode.substring(2, 3);
+                const sc_4_char = sharecode.substring(3, 4);
+                const sc_5_char = sharecode.substring(4, 5);
+                const sc_6_char = sharecode.substring(5, 6);
+                sc_1.value = sc_1_char;
+                sc_2.value = sc_2_char;
+                sc_3.value = sc_3_char;
+                sc_4.value = sc_4_char;
+                sc_5.value = sc_5_char;
+                sc_6.value = sc_6_char;
+                const shareback = document.getElementById('sharecontainer');
+                shareback.style.display = 'block';
+                shareback.style.opacity = '0';
+                shareback.classList.add('fade-in');
+
+                //Fade in
+                const share = document.getElementById('sharemain');
+                share.classList.add('scale-in-bottom');
+            });
+        } else {
+            const shareback = document.getElementById('sharecontainer');
+            shareback.style.display = 'block';
+            shareback.style.opacity = '0';
+            shareback.classList.add('fade-in');
+
+            //Fade in
+            const share = document.getElementById('sharemain');
+            share.classList.add('scale-in-bottom');
+        }
+    }
+
+    function hideShare() {
+        const share = document.getElementById('sharemain');
+        const shareback = document.getElementById('sharecontainer');
+        share.classList.remove('scale-in-bottom');
+        share.classList.add('scale-out-bottom');
+        setTimeout(function() {
+            shareback.classList.remove('fade-in');
+            shareback.classList.add('fade-out');
+            setTimeout(function() {
+
+                shareback.style.display = 'none';
+                shareback.style.opacity = '1';
+                share.classList.remove('scale-out-bottom');
+            }, 400);
+        }, 500);
+    }
+
     var angle = 0;
 
     var pill_download_limit = $('#spin-download');
@@ -559,6 +719,32 @@
             btn.classList.add("bg-green-500");
             btn.classList.add("hover:bg-green-400");
             btn.innerText = "Sent";
+        });
+    }
+
+    function copyShareCode() {
+        navigator.clipboard.writeText(sharecode.toUpperCase()).then(function() {
+            /* Alert the copied text */
+            var copyButton = document.getElementById("copy-share-code");
+            copyButton.innerHTML = "Copied!";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-green-500");
+            copyButton.classList.add("hover:bg-green-400");
+        }, function() {
+            /* Alert the copied text */
+            var copyButton = document.getElementById("copy-button");
+            copyButton.innerHTML = "Failed";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-red-500");
+            copyButton.classList.add("hover:bg-red-400");
         });
     }
 
