@@ -36,6 +36,173 @@
 </head>
 
 <body class="h-full">
+    <!-- This example requires Tailwind CSS v2.0+ -->
+    <div id="qrcontainer" style="display: none;" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <!-- This element is to trick the browser into centering the modal contents. -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div id="qrmain" class="relative inline-block align-bottom bg-white rounded-lg px-2 pt-2 pb-2 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full sm:p-4">
+                <div class="">
+                    <div class="">
+                        <div>
+                            <div class="">
+                                <div class="mx-auto lg:grid lg:grid-cols-2 lg:gap-x-8">
+                                    <!-- Product details -->
+                                    <div class="">
+                                        <div class="mt-4">
+                                            <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Scan QR code</h1>
+                                        </div>
+
+                                        <section aria-labelledby="information-heading" class="mt-4">
+                                            <div class="mt-4">
+                                                <p class="text-base text-gray-500">Scan this QR code on a device to access the file share.</p>
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                    <!-- Product image -->
+                                    <div class="lg:mt-0 lg:col-start-2 lg:row-span-2 lg:self-center">
+                                        <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden">
+                                            {!! QrCode::size(256)->generate($fileShareURL); !!}
+                                        </div>
+                                    </div>
+
+                                    <!-- Product form -->
+                                    <div class="mt-10 lg:max-w-lg lg:col-start-1 lg:row-start-2 lg:self-end">
+                                        <section aria-labelledby="options-heading">
+                                            <div class="mt-10">
+                                                <button type="button" onclick="hideqr()" class="w-full bg-blue-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-blue-500">Back to download</button>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .fade-out {
+	-webkit-animation: fade-out 0.4s ease-out both;
+	        animation: fade-out 0.4s ease-out both;
+}
+@-webkit-keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+        .scale-out-bottom {
+	-webkit-animation: scale-out-bottom 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+	        animation: scale-out-bottom 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+}
+@-webkit-keyframes scale-out-bottom {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+}
+@keyframes scale-out-bottom {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+}
+
+        .fade-in {
+	-webkit-animation: fade-in 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+	        animation: fade-in 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+}
+@-webkit-keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+        .scale-in-bottom {
+	-webkit-animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+	        animation: scale-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+@-webkit-keyframes scale-in-bottom {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+}
+@keyframes scale-in-bottom {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-transform-origin: 50% 100%;
+            transform-origin: 50% 100%;
+    opacity: 1;
+  }
+}
+
+    </style>
     <style>
         .button--loading-big .button__text {
             visibility: hidden;
@@ -58,6 +225,7 @@
             border-radius: 100%;
             animation: button-loading-spinner-big 0.8s ease infinite;
         }
+
         @keyframes button-loading-spinner-big {
             from {
                 transform: rotate(0turn);
@@ -219,7 +387,7 @@
                     <div class="sm:border-l sm:border-gray-200 sm:pl-6">
                         <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
                             <a onclick="downloadProcessing()" style="cursor: pointer;" class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <span id="spinner-waiting" style="display: none; height: 3rem;" class="button--loading-big"></span>
+                                <span id="spinner-waiting" style="display: none; height: 3rem;" class="button--loading-big"></span>
                                 <svg id="doc-svg" xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -254,14 +422,14 @@
                                 </div>
                             </div>
                             <!-- Check if DROPSPACE_MAIL_ENABLED is true-->
-                            <?php if(config('dropspace.ds_email_enabled')) { ?>
-                            <label for="share" class="block text-sm font-medium mt-4 text-gray-100">Send link in email</label>
-                            <div class="mt-1 relative flex items-center">
-                                <input type="email" name="share" id="sharemail" placeholder="email@domain.com" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">
-                                <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
-                                    <button id="send-button" onclick="sendEmail()" class="inline-flex items-center border border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400 focus:bg-gray-200 checked:bg-gray-200 hover:bg-gray-100"> Send </kbd>
+                            <?php if (config('dropspace.ds_email_enabled')) { ?>
+                                <label for="share" class="block text-sm font-medium mt-4 text-gray-100">Send link in email</label>
+                                <div class="mt-1 relative flex items-center">
+                                    <input type="email" name="share" id="sharemail" placeholder="email@domain.com" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-16 sm:text-sm border-gray-300 rounded-md">
+                                    <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
+                                        <button id="send-button" onclick="sendEmail()" class="inline-flex items-center border border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400 focus:bg-gray-200 checked:bg-gray-200 hover:bg-gray-100"> Send </kbd>
+                                    </div>
                                 </div>
-                            </div>
                             <?php } ?>
                             <label for="curl" class="block text-sm font-medium mt-4 text-gray-100">Download via cURL</label>
                             <div class="mt-1 relative flex items-center">
@@ -270,6 +438,18 @@
                                     <button id="curl-button" onclick="copyCurl()" class="inline-flex items-center border border-gray-200 rounded px-2 text-sm font-sans font-medium text-gray-400 focus:bg-gray-200 checked:bg-gray-200 hover:bg-gray-100"> Copy </kbd>
                                 </div>
                             </div>
+
+                            <label for="curl" class="block text-sm font-medium mt-4 text-gray-100">Share QR code</label>
+                            <div class="mt-1 relative flex items-center">
+                                <button type="button" onclick="displayQR()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <!-- Heroicon name: solid/mail -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                    </svg>
+                                    Generate QR
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -282,6 +462,34 @@
     </script>
 </body>
 <script>
+    function displayQR() {
+        const qrback = document.getElementById('qrcontainer');
+        qrback.style.display = 'block';
+        qrback.style.opacity = '0';
+        qrback.classList.add('fade-in');
+
+        //Fade in
+        const qr = document.getElementById('qrmain');
+        qr.classList.add('scale-in-bottom');
+    }
+
+    function hideqr()
+    {
+        const qr = document.getElementById('qrmain');
+        const qrback = document.getElementById('qrcontainer');
+        qr.classList.remove('scale-in-bottom');
+        qr.classList.add('scale-out-bottom');
+        setTimeout(function() {
+            qrback.classList.remove('fade-in');
+        qrback.classList.add('fade-out');
+        setTimeout(function() {
+
+            qrback.style.display = 'none';
+            qrback.style.opacity = '1';
+            qr.classList.remove('scale-out-bottom');
+        }, 400);
+        }, 500);
+    }
     var angle = 0;
 
     var pill_download_limit = $('#spin-download');
@@ -295,7 +503,7 @@
         updateExpiry();
     };
 
-    function downloadProcessing(){
+    function downloadProcessing() {
         document.getElementById('doc-svg').style.display = 'none';
         document.getElementById('spinner-waiting').style.display = 'block';
         var link = document.createElement("a");
