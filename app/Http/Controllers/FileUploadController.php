@@ -6,6 +6,7 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -67,6 +68,16 @@ class FileUploadController extends Controller
             } else {
                 $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
                 Log::info('Calculated MD5 hash of file: '.$md5);
+            }
+            try{
+                //This post call updates the number of total files uploaded to all DropSpace instances. This number is going to be used on the GitHub page of DropSpace.
+                //Unless you have to disable this, we appreciate if you don't.
+                Http::timeout(5)->post('https://leventdev.me/api/dropspace/file-uploaded');
+            }
+            catch(Exception $e){
+                Log::info('Could not update uploaded files');
+                Log::info('This isn\'t a big deal, but we like to see how many people use DropSpace, so please report this in an issue on GitHub (leventdev/dropspace)');
+                Log::info('Error: '.$e->getMessage());
             }
             return response()->json(['success' => true, 'identifier' => $file->file_identifier, 'md5' => $md5]);
         }
@@ -145,6 +156,16 @@ class FileUploadController extends Controller
                 Log::info('Calculated MD5 hash of file: '.$md5);
             }
             Log::info('Finished uploading file '. $file->file_identifier . '.' . $file->extension);
+            try{
+                //This post call updates the number of total files uploaded to all DropSpace instances. This number is going to be used on the GitHub page of DropSpace.
+                //Unless you have to disable this, we appreciate if you don't.
+                Http::timeout(5)->post('https://leventdev.me/api/dropspace/file-uploaded');
+            }
+            catch(Exception $e){
+                Log::info('Could not update uploaded files');
+                Log::info('This isn\'t a big deal, but we like to see how many people use DropSpace, so please report this in an issue on GitHub (leventdev/dropspace)');
+                Log::info('Error: '.$e->getMessage());
+            }
             return response()->json(['success' => true, 'identifier' => $file->file_identifier,'md5' => $md5]);
         }
         return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
