@@ -105,7 +105,11 @@
 
                                         <section aria-labelledby="information-heading" class="mt-4">
                                             <div class="mt-4">
-                                                <p class="text-base text-gray-500">Enter this six digit code on a device at <a class="underline" href="{{secure_url('/sharecode')}}">{{secure_url('/sharecode')}}</a></p>
+                                                <p class="text-base text-gray-500">Enter this six digit code on a device at <a class="underline" target="_blank" href="{{secure_url('/sharecode')}}">{{secure_url('/sharecode')}}</a></p>
+                                                <?php if($password_protected == true) { ?>
+                                                <p class="mt-4 text-base text-gray-500">That's all you need to share, the password is automagically passed on.</p>
+                                                <?php } ?>
+                                                <p class="mt-4 text-base text-gray-500">Keep in mind that this code will expire thirty minutes after creation or the first use, whichever comes first.</p>
                                             </div>
                                         </section>
                                     </div>
@@ -115,14 +119,14 @@
                                         <section aria-labelledby="information-heading" class="mt-4">
                                             <div class="mt-4 grid grid-cols-1">
                                                 <form class="grid grid-cols-6">
-                                                    <input disabled class="h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="1"></input>
-                                                    <input disabled class="h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="2"></input>
-                                                    <input disabled class="h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="3"></input>
-                                                    <input disabled class="h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="4"></input>
-                                                    <input disabled class="h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="5"></input>
-                                                    <input disabled class="h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="6"></input>
+                                                    <input id="sc-1" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-2" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-3" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-4" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-5" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-6" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
                                                 </form>
-                                                <button type="button" class="justify-self-center mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Copy to clipboard</button>
+                                                <button onclick="copyShareCode()" id="copy-share-code" type="button" class="justify-self-center mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Copy to clipboard</button>
                                             </div>
                                         </section>
                                     </div>
@@ -543,6 +547,8 @@
     </script>
 </body>
 <script>
+    var sharecode;
+
     function displayQR() {
         const qrback = document.getElementById('qrcontainer');
         qrback.style.display = 'block';
@@ -572,14 +578,59 @@
     }
 
     function displayShare() {
-        const shareback = document.getElementById('sharecontainer');
-        shareback.style.display = 'block';
-        shareback.style.opacity = '0';
-        shareback.classList.add('fade-in');
+        if (sharecode == null) {
+            //Make post call to generate sharecode to route {{secure_url('generate-sharecode')}}
+            sharecode = 'loading';
+            const Url = "{{secure_url('generate-sharecode')}}";
+            const data = {
+                file_id: "{{ $fileID }}",
+                _token: "{{ csrf_token() }}",
+                <?php if ($password_protected == true) { ?>
+                    <?php echo 'hash: "' . $hash.'"'; ?>
+                <?php } ?>
+            }
+            $.post(Url, data, function(response) {
+                async: false;
+                console.log(response);
+                sharecode = response.code;
+                const sc_1 = document.getElementById('sc-1');
+                const sc_2 = document.getElementById('sc-2');
+                const sc_3 = document.getElementById('sc-3');
+                const sc_4 = document.getElementById('sc-4');
+                const sc_5 = document.getElementById('sc-5');
+                const sc_6 = document.getElementById('sc-6');
+                //split sharecode into 6 characters
+                const sc_1_char = sharecode.substring(0, 1);
+                const sc_2_char = sharecode.substring(1, 2);
+                const sc_3_char = sharecode.substring(2, 3);
+                const sc_4_char = sharecode.substring(3, 4);
+                const sc_5_char = sharecode.substring(4, 5);
+                const sc_6_char = sharecode.substring(5, 6);
+                sc_1.value = sc_1_char;
+                sc_2.value = sc_2_char;
+                sc_3.value = sc_3_char;
+                sc_4.value = sc_4_char;
+                sc_5.value = sc_5_char;
+                sc_6.value = sc_6_char;
+                const shareback = document.getElementById('sharecontainer');
+                shareback.style.display = 'block';
+                shareback.style.opacity = '0';
+                shareback.classList.add('fade-in');
 
-        //Fade in
-        const share = document.getElementById('sharemain');
-        share.classList.add('scale-in-bottom');
+                //Fade in
+                const share = document.getElementById('sharemain');
+                share.classList.add('scale-in-bottom');
+            });
+        } else {
+            const shareback = document.getElementById('sharecontainer');
+            shareback.style.display = 'block';
+            shareback.style.opacity = '0';
+            shareback.classList.add('fade-in');
+
+            //Fade in
+            const share = document.getElementById('sharemain');
+            share.classList.add('scale-in-bottom');
+        }
     }
 
     function hideShare() {
@@ -668,6 +719,32 @@
             btn.classList.add("bg-green-500");
             btn.classList.add("hover:bg-green-400");
             btn.innerText = "Sent";
+        });
+    }
+
+    function copyShareCode() {
+        navigator.clipboard.writeText(sharecode.toUpperCase()).then(function() {
+            /* Alert the copied text */
+            var copyButton = document.getElementById("copy-share-code");
+            copyButton.innerHTML = "Copied!";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-green-500");
+            copyButton.classList.add("hover:bg-green-400");
+        }, function() {
+            /* Alert the copied text */
+            var copyButton = document.getElementById("copy-button");
+            copyButton.innerHTML = "Failed";
+            //remove style text-gray-400
+            copyButton.classList.remove("text-gray-400");
+            copyButton.classList.remove("hover:bg-gray-100");
+            //add style text-gray-200
+            copyButton.classList.add("text-gray-200");
+            copyButton.classList.add("bg-red-500");
+            copyButton.classList.add("hover:bg-red-400");
         });
     }
 
