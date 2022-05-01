@@ -32,11 +32,12 @@
             <meta property="og:type" content="website">
         <?php } else { ?>
             <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
-            <meta property="og:video:type" content="text/html">
-            <meta property="og:video:url" content="<meta property="og:image" content="{{asset('dropspace-cover.png')}}">">
+            <meta property="og:video:type" content="video/mp4">
+            <meta property="og:video:url" content="{{ $fileURL }}">
             <meta property="og:video:height" content="720">
             <meta property="og:video:width" content="1280">
-            <meta property="og:type" content="video.other">
+            <meta property="og:rich_attachment" content="true">
+            <meta property="og:type" content="website">
         <?php } ?>
     <?php } else { ?>
         <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
