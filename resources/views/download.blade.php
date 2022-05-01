@@ -33,8 +33,16 @@
         <?php } else { ?>
             <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
             <meta property="og:video:type" content="video/mp4">
+            <meta property="twitter:card" content="player">
             <meta property="og:video:url" content="{{ $fileURL }}">
+            <meta property="og:video:secure_url" content="{{ $fileURL }}">
+            <meta property="twitter:player:stream" content="{{ $fileURL }}">
+            <meta property="twitter:player:stream:content_type" content="video/mp4">
+            <meta property="og:video" content="{{ $fileURL }}">
             <meta property="og:video:height" content="720">
+            <meta property="twitter:player:height" content="720">
+            <meta property="twitter:player:width" content="1280">
+            <meta property="twitter:player" content="{{ $fileURL }}">
             <meta property="og:video:width" content="1280">
             <meta property="og:rich_attachment" content="true">
             <meta property="og:type" content="website">
@@ -42,10 +50,10 @@
     <?php } else { ?>
         <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
         <meta property="og:type" content="website">
+        <meta property="twitter:card" content="summary_large_image">
     <?php } ?>
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ secure_url('/')}}">
     <meta property="twitter:title" content="Download | DropSpace">
     <meta property="twitter:description" content="Download {{ $fileNameTag }} from DropSpace file share">
