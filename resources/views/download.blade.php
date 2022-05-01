@@ -23,14 +23,37 @@
     <meta name="description" content="Download {{ $fileNameTag }} from DropSpace file share">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
     <meta property="og:url" content="{{ secure_url('/')}}">
     <meta property="og:title" content="Download | DropSpace">
     <meta property="og:description" content="Download {{ $fileNameTag }} from DropSpace file share">
-    <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
+    <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'mp4' || $fileExtension == 'jpeg') { ?>
+        <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'jpeg') { ?>
+            <meta property="og:image" content="{{$fileURL}}">
+            <meta property="og:type" content="website">
+        <?php } else { ?>
+            <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
+            <meta property="og:video:type" content="video/mp4">
+            <meta property="twitter:card" content="player">
+            <meta property="og:video:url" content="{{ $fileURL }}">
+            <meta property="og:video:secure_url" content="{{ $fileURL }}">
+            <meta property="twitter:player:stream" content="{{ $fileURL }}">
+            <meta property="twitter:player:stream:content_type" content="video/mp4">
+            <meta property="og:video" content="{{ $fileURL }}">
+            <meta property="og:video:height" content="720">
+            <meta property="twitter:player:height" content="720">
+            <meta property="twitter:player:width" content="1280">
+            <meta property="twitter:player" content="{{ $fileURL }}">
+            <meta property="og:video:width" content="1280">
+            <meta property="og:rich_attachment" content="true">
+            <meta property="og:type" content="website">
+        <?php } ?>
+    <?php } else { ?>
+        <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
+        <meta property="og:type" content="website">
+        <meta property="twitter:card" content="summary_large_image">
+    <?php } ?>
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ secure_url('/')}}">
     <meta property="twitter:title" content="Download | DropSpace">
     <meta property="twitter:description" content="Download {{ $fileNameTag }} from DropSpace file share">
@@ -108,8 +131,8 @@
                                         <section aria-labelledby="information-heading" class="mt-4">
                                             <div class="mt-4">
                                                 <p class="text-base text-gray-500">Enter this six digit code on a device at <a class="underline" target="_blank" href="{{secure_url('/sharecode')}}">{{secure_url('/sharecode')}}</a></p>
-                                                <?php if($password_protected == true) { ?>
-                                                <p class="mt-4 text-base text-gray-500">That's all you need to share, the password is automagically passed on.</p>
+                                                <?php if ($password_protected == true) { ?>
+                                                    <p class="mt-4 text-base text-gray-500">That's all you need to share, the password is automagically passed on.</p>
                                                 <?php } ?>
                                                 <p class="mt-4 text-base text-gray-500">Keep in mind that this code will expire thirty minutes after creation or the first use, whichever comes first.</p>
                                             </div>
@@ -588,7 +611,7 @@
                 file_id: "{{ $fileID }}",
                 _token: "{{ csrf_token() }}",
                 <?php if ($password_protected == true) { ?>
-                    <?php echo 'hash: "' . $hash.'"'; ?>
+                    <?php echo 'hash: "' . $hash . '"'; ?>
                 <?php } ?>
             }
             $.post(Url, data, function(response) {
