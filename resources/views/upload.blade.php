@@ -20,12 +20,14 @@
     <meta property="og:url" content="{{ secure_url('/')}}">
     <meta property="og:title" content="Upload | DropSpace">
     <meta property="og:description" content="DropSpace file upload">
+    <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="htt{{ secure_url('/')}}">
     <meta property="twitter:title" content="Upload | DropSpace">
     <meta property="twitter:description" content="DropSpace file upload">
+    <meta property="twitter:image" content="{{asset('dropspace-cover.png')}}">
     <!--<script src="bower_components/resumablejs/resumable.js" type="application/javascript"></script>-->
     <script src="https://cdnout.com/resumable.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js" integrity="sha512-iWbxiCA4l1WTD0rRctt/BfDEmDC5PiVqFc6c1Rhj/GKjuj6tqrjrikTw3Sypm/eEgMa7jSOS9ydmDlOtxJKlSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
