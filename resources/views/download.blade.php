@@ -26,8 +26,8 @@
     <meta property="og:url" content="{{ secure_url('/')}}">
     <meta property="og:title" content="Download | DropSpace">
     <meta property="og:description" content="Download {{ $fileNameTag }} from DropSpace file share">
-    <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'mp4') { ?>
-        <?php if ($fileExtension == 'png' || $fileExtension == 'jpg') { ?>
+    <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'mp4' || $fileExtension == 'jpeg') { ?>
+        <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'jpeg') { ?>
             <meta property="og:image" content="{{$fileURL}}">
             <meta property="og:type" content="website">
         <?php } else { ?>
