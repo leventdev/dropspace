@@ -61,7 +61,7 @@ class ShareCodeController extends Controller
                 $shareCode->used = false;
                 $shareCode->expiry_date = date('Y-m-d H:i:s', strtotime('+30 minutes'));
                 //Generate random code that can contain letters and at least two numbers
-                $shareCode->code = substr(str_shuffle(str_repeat('0123456789abcdefghijklmnopqrstuvwxyz', mt_rand(1, 10))), 1, 6);
+                $shareCode->code = substr(str_shuffle(str_repeat('123456789abcdefghjklmnpqrstuvwxyz', mt_rand(1, 10))), 1, 6);
                 $shareCode->save();
                 return response()->json(['code' => $shareCode->code, 'expiry_date' => $shareCode->expiry_date]);
             }
@@ -71,7 +71,7 @@ class ShareCodeController extends Controller
             $shareCode->used = false;
             $shareCode->expiry_date = date('Y-m-d H:i:s', strtotime('+30 minutes'));
             //Generate random code that can contain letters and at least two numbers, length should be 6
-            $shareCode->code = strtoupper(substr(str_shuffle(str_repeat('0123456789abcdefghijklmnopqrstuvwxyz', mt_rand(1, 10))), 1, 6));
+            $shareCode->code = strtoupper(substr(str_shuffle(str_repeat('123456789abcdefghjklmnpqrstuvwxyz', mt_rand(1, 10))), 1, 6));
             $shareCode->save();
             return response()->json(['code' => $shareCode->code, 'expiry_date' => $shareCode->expiry_date]);
         }

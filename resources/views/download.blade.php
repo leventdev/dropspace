@@ -119,12 +119,12 @@
                                         <section aria-labelledby="information-heading" class="mt-4">
                                             <div class="mt-4 grid grid-cols-1">
                                                 <form class="grid grid-cols-6">
-                                                    <input id="sc-1" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
-                                                    <input id="sc-2" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
-                                                    <input id="sc-3" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
-                                                    <input id="sc-4" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
-                                                    <input id="sc-5" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
-                                                    <input id="sc-6" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-thin text-3xl" value="0"></input>
+                                                    <input id="sc-1" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-mono text-3xl" value="0"></input>
+                                                    <input id="sc-2" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-mono text-3xl" value="0"></input>
+                                                    <input id="sc-3" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-mono text-3xl" value="0"></input>
+                                                    <input id="sc-4" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-mono text-3xl" value="0"></input>
+                                                    <input id="sc-5" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-mono text-3xl" value="0"></input>
+                                                    <input id="sc-6" disabled class="uppercase h-16 w-12 border mx-2 rounded-lg flex items-center text-center font-mono text-3xl" value="0"></input>
                                                 </form>
                                                 <button onclick="copyShareCode()" id="copy-share-code" type="button" class="justify-self-center mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Copy to clipboard</button>
                                             </div>

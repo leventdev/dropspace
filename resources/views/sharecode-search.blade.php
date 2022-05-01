@@ -45,12 +45,12 @@
                                 </div>
                                 <div class="w-full sm:max-w-xs mt-5 sm:flex sm:items-center">
                                     <div class="row-start-2 grid grid-cols-6">
-                                        <input onkeyup="stepForward(1)" onkeydown="stepBack(event, 1)" onclick="resetValue(1)" id="sc-1" class="col-start-1 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-thin text-xl" value=""></input>
-                                        <input onkeyup="stepForward(2)" onkeydown="stepBack(event, 2)" onclick="resetValue(2)" id="sc-2" class="col-start-2 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-thin text-xl" value=""></input>
-                                        <input onkeyup="stepForward(3)" onkeydown="stepBack(event, 3)" onclick="resetValue(3)" id="sc-3" class="col-start-3 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-thin text-xl" value=""></input>
-                                        <input onkeyup="stepForward(4)" onkeydown="stepBack(event, 4)" onclick="resetValue(4)" id="sc-4" class="col-start-4 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-thin text-xl" value=""></input>
-                                        <input onkeyup="stepForward(5)" onkeydown="stepBack(event, 5)" onclick="resetValue(5)" id="sc-5" class="col-start-5 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-thin text-xl" value=""></input>
-                                        <input onkeyup="stepForward(6)" onkeydown="stepBack(event, 6)" onclick="resetValue(6)" id="sc-6" class="col-start-6 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-thin text-xl" value=""></input>
+                                        <input onkeyup="stepForward(1)" onkeydown="stepBack(event, 1)" onclick="resetValue(1)" id="sc-1" class="col-start-1 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-mono text-xl" value=""></input>
+                                        <input onkeyup="stepForward(2)" onkeydown="stepBack(event, 2)" onclick="resetValue(2)" id="sc-2" class="col-start-2 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-mono text-xl" value=""></input>
+                                        <input onkeyup="stepForward(3)" onkeydown="stepBack(event, 3)" onclick="resetValue(3)" id="sc-3" class="col-start-3 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-mono text-xl" value=""></input>
+                                        <input onkeyup="stepForward(4)" onkeydown="stepBack(event, 4)" onclick="resetValue(4)" id="sc-4" class="col-start-4 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-mono text-xl" value=""></input>
+                                        <input onkeyup="stepForward(5)" onkeydown="stepBack(event, 5)" onclick="resetValue(5)" id="sc-5" class="col-start-5 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-mono text-xl" value=""></input>
+                                        <input onkeyup="stepForward(6)" onkeydown="stepBack(event, 6)" onclick="resetValue(6)" id="sc-6" class="col-start-6 uppercase h-14 w-10 border mx-2 rounded-lg flex items-center text-center font-mono text-xl" value=""></input>
                                     </div>
                                 </div>
                             </div>
