@@ -27,12 +27,14 @@
     <meta property="og:url" content="{{ secure_url('/')}}">
     <meta property="og:title" content="Download | DropSpace">
     <meta property="og:description" content="Download {{ $fileNameTag }} from DropSpace file share">
+    <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ secure_url('/')}}">
     <meta property="twitter:title" content="Download | DropSpace">
     <meta property="twitter:description" content="Download {{ $fileNameTag }} from DropSpace file share">
+    <meta property="twitter:image" content="{{asset('dropspace-cover.png')}}">
 </head>
 
 <body class="h-full">
