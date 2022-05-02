@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\File;
+use App\Models\ShareCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -44,8 +45,8 @@ class DeleteExpiredFiles extends Command
                     Log::info('Deleted file: ' . $file->path . ' for expiry (date): ' . $file->expiry_date);
                 }
             }
-            if($file->download_limit != 0) {
-                if($file->download_count >= $file->download_limit) {
+            if ($file->download_limit != 0) {
+                if ($file->download_count >= $file->download_limit) {
                     Storage::disk(config('dropspace.ds_storage_type'))->delete('dropspace/uploads/' . $file->path);
                     $file->deleted_for_expiry = 1;
                     $file->save();
@@ -54,5 +55,18 @@ class DeleteExpiredFiles extends Command
             }
         }
         Log::info('Finished removing expired files.');
+        Log::info('Starting removal of expired sharecodes.');
+        $sharecodes = ShareCode::all();
+        foreach ($sharecodes as $sharecode) {
+            $date = Carbon::parse($sharecode->expiry_date);
+            if ($date->isPast()) {
+                $sharecode->delete();
+                Log::info('Deleted sharecode: ' . $sharecode->code . ' for expiry (date): ' . $sharecode->expiry_date);
+            }
+            if($sharecode->used == 1) {
+                $sharecode->delete();
+                Log::info('Deleted sharecode: ' . $sharecode->code . ' because it has been used.');
+            }
+        }
     }
 }

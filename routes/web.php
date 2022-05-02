@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('upload');
-});
+Route::get('/', 'App\Http\Controllers\LoginController@goToUpload')->name('upload');
 
 Route::post('/upload-cli', 'App\Http\Controllers\FileUploadController@uploadCLIChunks')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
 Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks');
@@ -33,3 +31,13 @@ Route::get('/download-file/{file_id}', 'App\Http\Controllers\FileDownloadControl
 Route::get('/download/{file_id}', 'App\Http\Controllers\FileDownloadViewController@returnFile');
 //Route to send a file to an email
 Route::post('/send-mail-file', 'App\Http\Controllers\FileDownloadViewController@sendMail');
+//Route to getting a new ShareCode
+Route::post('/generate-sharecode', 'App\Http\Controllers\ShareCodeController@generateShareCode');
+//Route to accessing a file from ShareCode
+Route::get('/sharecode', 'App\Http\Controllers\ShareCodeController@inputScreen');
+//Route for looking up a ShareCode
+Route::get('/sharecode/{id}', 'App\Http\Controllers\ShareCodeController@findShareCode');
+//Route for logging in (POST)
+Route::post('/login', 'App\Http\Controllers\LoginController@authenticate')->name('login.post');
+//Route for logging out
+Route::get('/logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
