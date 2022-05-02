@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'App\Http\Controllers\LoginController@goToUpload')->name('upload');
 
+Route::get('/cli/domain-check', function ()
+{
+    return 'Domain valid';
+});
 Route::post('/upload-cli', 'App\Http\Controllers\FileUploadController@uploadCLIChunks')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
 Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks');
 //Route to updating the expiry of a file
