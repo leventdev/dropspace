@@ -30,6 +30,8 @@
         <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'jpeg') { ?>
             <meta property="og:image" content="{{$fileURL}}">
             <meta property="og:type" content="website">
+            <meta property="twitter:card" content="summary_large_image">
+            <meta property="twitter:image" content="{{$fileURL}}">
         <?php } else { ?>
             <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
             <meta property="og:video:type" content="video/mp4">
@@ -51,13 +53,13 @@
         <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
         <meta property="og:type" content="website">
         <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:image" content="{{asset('dropspace-cover.png')}}">
     <?php } ?>
 
     <!-- Twitter -->
     <meta property="twitter:url" content="{{ secure_url('/')}}">
     <meta property="twitter:title" content="Download | DropSpace">
     <meta property="twitter:description" content="Download {{ $fileNameTag }} from DropSpace file share">
-    <meta property="twitter:image" content="{{asset('dropspace-cover.png')}}">
 </head>
 
 <body class="h-full">
