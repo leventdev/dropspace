@@ -37,7 +37,6 @@ DropSpace is built using [Laravel](https://laravel.com).
 | Auto delete based on download count                             | :white_check_mark: |
 | File download via curl (click-to-copy command)                  | :white_check_mark: |
 | File storage in S3 storage                                      | :white_check_mark: |
-| Dynamic meta tag card image generation using Browsershot        | :x:                |
 | File upload via CLI                                             | :x:                |
 | Auto update                                                     | :x:                |
 | Automatic file compression on uploaded files                    | :x:                |
