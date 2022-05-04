@@ -190,7 +190,12 @@
         console.log(message);
         const btn = document.getElementById('buttonid');
         btn.classList.remove("button--loading");
-        btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Error while uploading file. Please try again. </span>';
+        const obj = JSON.parse(message);
+        if(message.includes('File size exceeds maximum file size.')) {
+            btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> '+obj.error+' </span>';
+        } else {
+            btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Error while uploading file. Please try again. </span>';
+        }
         document.getElementById('loader-big').style.display = "none";
     });
 

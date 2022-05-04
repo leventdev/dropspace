@@ -25,6 +25,16 @@ class FileUploadController extends Controller
         $resumableIdentifier = request()->resumableIdentifier;
         $clientFilename = request()->resumableFilename;
 
+
+        if(config('dropspace.ds_max_file_size') != 0){
+            Log::info('Max file size is set to: ' . $this->byteConvert(config('dropspace.ds_max_file_size')));
+            if(request()->resumableTotalSize > config('dropspace.ds_max_file_size')){
+                $maxServerFileSize = $this->byteConvert(config('dropspace.ds_max_file_size'));
+                Log::info('File is larger than the max allowed file size');
+                return response()->json(['error' => 'File size exceeds maximum file size. Max file size: '.$maxServerFileSize], 400);
+            }
+        }
+
         if ($totalChunks == 1) {
             //Save file to storage and database
             Log::info('Received 1 chunk long file. Saving file.');

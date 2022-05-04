@@ -15,7 +15,7 @@ return [
 
     //The maximum uploadable file size in bytes.
     //Set to 0 for no maximum file size.
-    'ds_max_file_size' => 5000000000,
+    'ds_max_file_size' => 0,
 
     //If this is set to true, files without an expiry date, will auto-expire after ds_auto_expiry_days
     'ds_auto_expiry' => false,
