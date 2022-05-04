@@ -36,26 +36,26 @@
                     <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="p-5 h-26 w-96 object-contain">
                     <!--<p class="text-left text-sm font-medium md:text-white text-indigo-600 sm:text-sm pb-0 md:pl-5">From <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="pb-2 pr-2 h-8 object-contain inline-block"></p>-->
                 </div>
-                    <div class="sm:ml-6 self-center sm:border-l sm:border-gray-200 sm:pl-6">
-                        <div>
-                            <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-                                <a class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    <span class="mt-2 block text-sm font-medium text-gray-50"> {{ $fileName }} </span>
-                                    <span class="mt-2 block text-xs font-normal text-gray-200"> {{ $size}} </span>
-                                    <span class="mt-2 block text-xs font-normal text-gray-300"> {{ $uploadDate }} </span>
-                                </a>
-                            </div>
+                <div class="sm:ml-6 self-center sm:border-l sm:border-gray-200 sm:pl-6">
+                    <div>
+                        <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
+                            <a class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="mt-2 block text-sm font-medium text-gray-50"> {{ $fileName }} </span>
+                                <span class="mt-2 block text-xs font-normal text-gray-200"> {{ $size}} </span>
+                                <span class="mt-2 block text-xs font-normal text-gray-300"> {{ $uploadDate }} </span>
+                            </a>
                         </div>
-                        <div>
-                            <div class="mt-4 relative flex items-center">
-                                <form action="{{secure_url('save-file-details/'.$fileID)}}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <input type="hidden" name="file_identifier" value="{{$fileID}}">
-                                    <div class="shadow rounded-md sm:overflow-hidden">
-                                        <div>
+                    </div>
+                    <div>
+                        <div class="mt-4 relative flex items-center">
+                            <form action="{{secure_url('save-file-details/'.$fileID)}}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="file_identifier" value="{{$fileID}}">
+                                <div class="shadow rounded-md sm:overflow-hidden">
+                                    <div>
                                         <div class="border-b border-gray-200 px-4 py-6 bg-white space-y-6 sm:p-6 grid grid-rows-1">
                                             <span class="flex flex-col row-span-1 row-end-3 mt-4">
                                                 <span class="text-sm font-medium text-gray-900" id="availability-label">Expiry</span>
@@ -85,30 +85,30 @@
                                         </div>
                                         <div>
                                             <div class="px-4 pb-5 pt-0 bg-white space-y-6 sm:p-6 grid grid-rows-1" style="padding-top: 12px !important;">
-                                            <span class="flex flex-col row-span-1 row-end-1 mt-4">
-                                                <span class="text-sm font-medium text-gray-900" id="availability-label">Password protect</span>
-                                                <span class="text-sm text-gray-500" id="availability-description">A password will be needed to download this file.</span>
-                                            </span>
-                                            <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
-                                            <input type="hidden" value="false" name="passbool" id="passwordtoggle" />
-                                            <button onclick="togglePassword()" type="button" id="passwordbutton" class="mt-4 row-span-1 row-end-1 ml-16 bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" role="switch" aria-checked="false" aria-labelledby="availability-label" aria-describedby="availability-description">
-                                                <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
-                                                <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
-                                            </button>
-                                            <!--<input type="password" onsubmit="" name="password" id="passwordbox" value="" readonly placeholder="**********" class="mt-2 row-end-4 col-span-2 relative items-center shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">-->
+                                                <span class="flex flex-col row-span-1 row-end-1 mt-4">
+                                                    <span class="text-sm font-medium text-gray-900" id="availability-label">Password protect</span>
+                                                    <span class="text-sm text-gray-500" id="availability-description">A password will be needed to download this file.</span>
+                                                </span>
+                                                <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
+                                                <input type="hidden" value="false" name="passbool" id="passwordtoggle" />
+                                                <button onclick="togglePassword()" type="button" id="passwordbutton" class="mt-4 row-span-1 row-end-1 ml-16 bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" role="switch" aria-checked="false" aria-labelledby="availability-label" aria-describedby="availability-description">
+                                                    <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+                                                    <span aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"></span>
+                                                </button>
+                                                <!--<input type="password" onsubmit="" name="password" id="passwordbox" value="" readonly placeholder="**********" class="mt-2 row-end-4 col-span-2 relative items-center shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">-->
 
-                                            <input type="password" onsubmit="" name="password" id="passwordbox" value="" readonly placeholder="**********" class="mt-2 row-end-2 col-span-2 relative items-center shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                                <input type="password" onsubmit="" name="password" id="passwordbox" value="" readonly placeholder="**********" class="mt-2 row-end-2 col-span-2 relative items-center shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
                                             </div>
                                         </div>
-                                        </div>
-                                        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
-                                        </div>
                                     </div>
-                                </form>
-                            </div>
+                                    <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
+                </div>
             </main>
         </div>
     </div>
