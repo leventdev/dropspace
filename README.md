@@ -1,10 +1,15 @@
 <p align="center"><a><img src="/public/mockups/logo.png"></a></p>
 
-<!-- 
-    Insert tags, badges, etc... here
--->
 
 # DropSpace
+<!-- 
+    Insert tags, badges, etc... here
+
+This is gonna get uncommented, when the upload counter get's a bit higher.
+
+<img src="https://img.shields.io/endpoint?url=https://leventdev.me/api/dropspace/files-uploaded" alt="Files uploaded"></a>
+(^ that's how many files were ever uploaded to a DropSpace)
+-->
 
 ### Simple file sharing made in Laravel
 
@@ -20,6 +25,9 @@ DropSpace is built using [Laravel](https://laravel.com).
 | Feature                                                         | Status             |
 | --------------------------------------------------------------- | ------------------ |
 | File upload (chunked using Resumable.js                         | :white_check_mark: |
+| Server side settings. (Max file size, default expiry, ...)      | :white_check_mark: |
+| Protected uploads (With multiple users)                         | :white_check_mark: |
+| Rich embeds. (Video player or image display)                    | :white_check_mark: |
 | File checksum verification                                      | :white_check_mark: |
 | File sharing in email                                           | :white_check_mark: |
 | File protection                                                 | :white_check_mark: |
