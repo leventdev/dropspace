@@ -7,7 +7,7 @@
 
 -->
 
-<img src="https://img.shields.io/endpoint?url=https://leventdev.me/api/dropspace/files-uploaded" alt="Files uploaded"></a>
+<img src="https://img.shields.io/endpoint?url=https://leventdev.me/api/dropspace/files-uploaded" alt="Files uploaded"></a>  
 (^ that's how many files were ever uploaded to DropSpaces)
 
 ### Simple file sharing made in Laravel
