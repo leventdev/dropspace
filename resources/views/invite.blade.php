@@ -20,12 +20,14 @@
     <meta property="og:url" content="{{ secure_url('/')}}">
     <meta property="og:title" content="Invite | DropSpace">
     <meta property="og:description" content="DropSpace Invite">
+    <meta property="og:image" content="{{asset('dropspace-cover.png')}}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="htt{{ secure_url('/')}}">
     <meta property="twitter:title" content="Invite | DropSpace">
     <meta property="twitter:description" content="DropSpace Invite">
+    <meta property="twitter:image" content="{{asset('dropspace-cover.png')}}">
 </head>
 
 <body class="h-full">
