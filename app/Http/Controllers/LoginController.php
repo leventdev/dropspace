@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Invite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -86,6 +87,65 @@ class LoginController extends Controller
             return redirect('/settings');
         }else{
             return redirect('/');
+        }
+    }
+
+    public function invite($id, Request $request){
+        //Check if invite exists
+        if(Invite::where('code', $id)->exists()){
+            //Chekc if invite is used
+            $invite = Invite::where('code', $id)->first();
+            if($invite->used == true){
+                //Invite is used
+                return view('download-error', ['error' => 'This invite has already been used.']);
+            }
+            //Invite is not used
+            //Display the register page
+            return view('invite', ['invite_code' => $id]);
+        }else{
+            return view('download-error', ['error' => 'Invite does not exist.']);
+        }
+    }
+
+    public function useInvite(Request $request){
+        if(Invite::where('code', $request->input('invite_code'))->exists()){
+            $invite = Invite::where('code', $request->input('invite_code'))->first();
+            if($invite->used == true){
+                //Invite is used
+                return view('download-error', ['error' => 'This invite has already been used.']);
+            }
+            //Invite is not used
+            /*$name = $this->ask('What should the username be?');
+            $email = $this->ask('What should the email be?');
+            $password = $this->secret('What should the password be? (The input is hidden)');
+            $ecompany = $this->ask('Where does this user work? (Leave blank if you don\'t want to enter a company)');
+            $ename = $this->ask('How is this user called? (Leave blank if you don\'t want to enter a name)');*/
+            $user = User::where('email', $request->input('email'))->first();
+            if ($user) {
+                return back()->withErrors(['email' => 'This email is already registered.',]);
+            }
+            $user = User::where('name', $request->input('name'))->first();
+            if ($user) {
+                return back()->withErrors(['email' => 'This username is already registered.',]);
+            }
+            if($request->input('company') == ''){
+                $ecompany = null;
+            }
+            if($request->input('ename') == ''){
+                $ename = null;
+            }
+            User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => bcrypt($request->input('password')),
+                'ecompany' => $request->input('company'),
+                'ename' => $request->input('ename'),
+            ]);
+            $invite->used = true;
+            $invite->save();
+            return redirect('/');
+        }else{
+            return view('download-error', ['error' => 'Invite does not exist.']);
         }
     }
 }
