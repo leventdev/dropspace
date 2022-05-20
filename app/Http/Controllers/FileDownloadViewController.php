@@ -32,15 +32,21 @@ class FileDownloadViewController extends Controller
         $company = '';
         $hasPersonalization = false;
         if(config('dropspace.ds_security_enabled')){
+            if(Auth::check()){
 
-            if(Auth::user()->ename == null && Auth::user()->ecompany == null){
+                if(Auth::user()->ename == null && Auth::user()->ecompany == null){
+                    $name = '';
+                    $company = '';
+                    $hasPersonalization = false;
+                }else{
+                    $name = Auth::user()->ename;
+                    $company = Auth::user()->ecompany;
+                    $hasPersonalization = true;
+                }
+            }else{
                 $name = '';
                 $company = '';
                 $hasPersonalization = false;
-            }else{
-                $name = Auth::user()->ename;
-                $company = Auth::user()->ecompany;
-                $hasPersonalization = true;
             }
         }
         Mail::to($email)->send(new SendFileShare($url, $file->name, $hasPersonalization, $name, $company));

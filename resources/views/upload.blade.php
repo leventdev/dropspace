@@ -97,7 +97,7 @@
         }
     </style>
     <div class="bg-gray-800 min-h-full px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
-    @if (config('dropspace.ds_security_enabled'))
+    @if (config('dropspace.ds_security_enabled') && Auth::check())
         <div class="absolute top-4 right-6 grid grid-cols-1 grid-rows-2">
             <div>
                 <button type="button" onclick="window.location.href='/settings/'" class="inline-flex justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
