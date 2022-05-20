@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class FileUploadController extends Controller
 {
@@ -18,7 +19,15 @@ class FileUploadController extends Controller
     public function uploadChunks()
     {
         //This is gonna be a blast to write
-
+        //Check if auth is required
+        if (config('dropspace.ds_security_enabled') == true) {
+            //Check if the user is logged in
+            if (Auth::check()) {
+            } else {
+                //If the user is not logged in, we can't continue
+                return response()->json(['error' => 'Uploading requires you to be signed in. If this is an error, please contact the admin.'], 400);
+            }
+        }
 
         $totalChunks = request()->resumableTotalChunks;
         $chunkNumber = request()->resumableChunkNumber;
@@ -121,6 +130,11 @@ class FileUploadController extends Controller
                 $file->uploader_ip = request()->ip();
             }
 
+            if(config('dropspace.ds_security_enabled')){
+                //Save user's email to database
+                $file->uploader = Auth::user()->email;
+            }
+
             //generate file_identifier
             $file->file_identifier = Str::random(12);
             while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
@@ -203,6 +217,17 @@ class FileUploadController extends Controller
 
     public function setFileDetails($id)
     {
+        //Check if auth is required
+        if (config('dropspace.ds_security_enabled') == true) {
+            //Check if the user is logged in
+            if (Auth::check()) {
+            } else {
+                //If the user is not logged in, we can't continue
+                return view('download-error', ['error' => "You need to be signed in to do that."]);
+            }
+        }
+        
+        
         //This function is called when the user wants to set the file's details, this is the view that is shown to the user
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
@@ -218,6 +243,15 @@ class FileUploadController extends Controller
 
     public function saveFileDetails($id, Request $request)
     {
+        //Check if auth is required
+        if (config('dropspace.ds_security_enabled') == true) {
+            //Check if the user is logged in
+            if (Auth::check()) {
+            } else {
+                //If the user is not logged in, we can't continue
+                return view('download-error', ['error' => "You need to be signed in to do that."]);
+            }
+        }
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
             return view('download-error', ['error' => "File doesn't exist."]);

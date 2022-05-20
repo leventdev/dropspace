@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Mail\SendFileShare;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class FileDownloadViewController extends Controller
 {
@@ -26,7 +28,23 @@ class FileDownloadViewController extends Controller
         $email = request()->email;
         $file = File::where('file_identifier', $fileid)->first();
         $url = secure_url('/download/' . $file->file_identifier . '?hash=' . $file->password);
-        Mail::to($email)->send(new SendFileShare($url, $file->name));
+        $name = '';
+        $company = '';
+        $hasPersonalization = false;
+        if(config('dropspace.ds_security_enabled')){
+
+            if(Auth::user()->ename == null && Auth::user()->ecompany == null){
+                $name = '';
+                $company = '';
+                $hasPersonalization = false;
+            }else{
+                $name = Auth::user()->ename;
+                $company = Auth::user()->ecompany;
+                $hasPersonalization = true;
+            }
+        }
+        Mail::to($email)->send(new SendFileShare($url, $file->name, $hasPersonalization, $name, $company));
+        Log::info('Email sent to ' . $email);
     }
 
     public function returnFile($file_id)
