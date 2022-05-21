@@ -170,9 +170,9 @@
         query: {
             _token: '{{ csrf_token() }}'
         },
-        simultaneousUploads: 1,
+        simultaneousUploads: 3,
         maxChunkRetries: 10,
-        chunkSize: 1000000,
+        chunkSize: 10000000,
     });
 
     r.assignBrowse(document.getElementById('buttonid'));
