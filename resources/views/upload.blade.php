@@ -172,7 +172,7 @@
         },
         simultaneousUploads: 3,
         maxChunkRetries: 10,
-        chunkSize: 10000000,
+        chunkSize: 5000000,
     });
 
     r.assignBrowse(document.getElementById('buttonid'));
