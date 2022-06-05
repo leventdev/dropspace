@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class FileUploadController extends Controller
 {
     //
 
-    public function uploadCLIChunks(){
+    public function uploadCLIChunks()
+    {
         Log::info('Received chunk from CLI: ' . request()->get('chunkNumber'));
         //Save file to disk named "{chunkNumber}-dropspace-cli.part"
         Storage::put('dropspace/temp/', request()->file('file'));
@@ -32,7 +34,20 @@ class FileUploadController extends Controller
             if (Auth::check()) {
             } else {
                 //If the user is not logged in, we can't continue
-                return response()->json(['error' => 'Uploading requires you to be signed in. If this is an error, please contact the admin.'], 400);
+                //Check if request has CLI key
+                if (request()->has('cli_key')) {
+                    //Check if CLI key is valid
+                    $user = User::where('cli_key', request()->get('cli_key'))->first();
+                    if ($user) {
+                        //User is valid, log them in
+                        Auth::login($user);
+                    } else {
+                        //User is not valid, return error
+                        return response()->json(['error' => 'Invalid CLI key']);
+                    }
+                } else {
+                    return response()->json(['error' => 'Uploading requires you to be signed in. If this is an error, please contact the admin.'], 400);
+                }
             }
         }
 
@@ -41,18 +56,18 @@ class FileUploadController extends Controller
         $resumableIdentifier = request()->resumableIdentifier;
         $clientFilename = request()->resumableFilename;
 
-        if(config('dropspace.ds_max_file_size') != 0){
+        if (config('dropspace.ds_max_file_size') != 0) {
             Log::info('Max file size is set to: ' . $this->byteConvert(config('dropspace.ds_max_file_size')));
-            if(request()->resumableTotalSize > config('dropspace.ds_max_file_size')){
+            if (request()->resumableTotalSize > config('dropspace.ds_max_file_size')) {
                 $maxServerFileSize = $this->byteConvert(config('dropspace.ds_max_file_size'));
                 Log::info('File is larger than the max allowed file size');
-                return response()->json(['error' => 'File size exceeds maximum file size. Max file size: '.$maxServerFileSize], 400);
+                return response()->json(['error' => 'File size exceeds maximum file size. Max file size: ' . $maxServerFileSize], 400);
             }
         }
         //Check available space on server
-        if(config("dropspace.ds_storage_type") == 'local'){
+        if (config("dropspace.ds_storage_type") == 'local') {
             $free_space = disk_free_space(storage_path('app/'));
-            if($free_space < request()->resumableTotalSize){
+            if ($free_space < request()->resumableTotalSize) {
                 Log::info('Not enough space on server');
                 Log::info('Free space on server: ' . $free_space);
                 Log::info('Total size of chunks: ' . request()->resumableTotalSize);
@@ -79,40 +94,39 @@ class FileUploadController extends Controller
                 $file->file_identifier = Str::random(12);
             }
             Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
-            if(config('dropspace.ds_storage_type') == 's3'){
+            if (config('dropspace.ds_storage_type') == 's3') {
                 Log::info('Uploading file to S3');
                 //Updated using streams
-                Storage::putFileAs('dropspace/temp/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
-                $stream = Storage::disk('local')->readStream('dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
-                Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, $stream);
+                Storage::putFileAs('dropspace/temp/', request()->file('file'), $file->file_identifier . '.' . $file->extension);
+                $stream = Storage::disk('local')->readStream('dropspace/temp/' . $file->file_identifier . '.' . $file->extension);
+                Storage::disk('s3')->put('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension, $stream);
                 //End using streams
                 Log::info('Uploaded file to S3');
             } else {
                 Log::info('Moving file to local storage');
-                Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier.'.'.$file->extension);
+                Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier . '.' . $file->extension);
                 Log::info('Moved file to local storage');
             }
             $file->path = $file->file_identifier . '.' . $file->extension;
             Log::info('Saved file to storage. Saving file [' . $file->file_identifier . '] to database.');
             $file->save();
             Log::info('Saved file to database. Sending response.');
-            if(config('dropspace.ds_storage_type') == 's3'){
-                $md5 = md5_file('../storage/app/dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
-                Log::info('Calculated MD5 hash of file: '.$md5);
-                Storage::delete('dropspace/temp/'.$file->file_identifier.'.'.$file->extension);
+            if (config('dropspace.ds_storage_type') == 's3') {
+                $md5 = md5_file('../storage/app/dropspace/temp/' . $file->file_identifier . '.' . $file->extension);
+                Log::info('Calculated MD5 hash of file: ' . $md5);
+                Storage::delete('dropspace/temp/' . $file->file_identifier . '.' . $file->extension);
             } else {
                 $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
-                Log::info('Calculated MD5 hash of file: '.$md5);
+                Log::info('Calculated MD5 hash of file: ' . $md5);
             }
-            try{
+            try {
                 //This post call updates the number of total files uploaded to all DropSpace instances. This number is going to be used on the GitHub page of DropSpace.
                 //Unless you have to disable this, we appreciate if you don't.
                 Http::timeout(5)->post('https://leventdev.me/api/dropspace/file-uploaded');
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Log::info('Could not update uploaded files');
                 Log::info('This isn\'t a big deal, but we like to see how many people use DropSpace, so please report this in an issue on GitHub (leventdev/dropspace)');
-                Log::info('Error: '.$e->getMessage());
+                Log::info('Error: ' . $e->getMessage());
             }
             return response()->json(['success' => true, 'identifier' => $file->file_identifier, 'md5' => $md5]);
         }
@@ -137,7 +151,7 @@ class FileUploadController extends Controller
                 $file->uploader_ip = request()->ip();
             }
 
-            if(config('dropspace.ds_security_enabled')){
+            if (config('dropspace.ds_security_enabled')) {
                 //Save user's email to database
                 $file->uploader = Auth::user()->email;
             }
@@ -166,14 +180,14 @@ class FileUploadController extends Controller
             }
             fclose($fp);
             Log::info('Finished appending chunks to file: ' . $resumableIdentifier . '-' . $clientFilename);
-            Storage::deleteDirectory('dropspace/chunks/'.$resumableIdentifier);
-            Log::info('Deleted chunks directory: dropspace/chunks/'.$resumableIdentifier);
-            if(config('dropspace.ds_storage_type') == 's3'){
+            Storage::deleteDirectory('dropspace/chunks/' . $resumableIdentifier);
+            Log::info('Deleted chunks directory: dropspace/chunks/' . $resumableIdentifier);
+            if (config('dropspace.ds_storage_type') == 's3') {
                 Log::info('Uploading file to S3');
                 //Updated using streams
 
-                $stream = Storage::disk('local')->readStream('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
-                Storage::disk('s3')->put('dropspace/uploads/'.$file->file_identifier.'.'.$file->extension, $stream);
+                $stream = Storage::disk('local')->readStream('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename);
+                Storage::disk('s3')->put('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension, $stream);
 
                 //End using streams
                 Log::info('Uploaded file to S3');
@@ -187,40 +201,39 @@ class FileUploadController extends Controller
             Log::info('Saved file to database');
             //Make MD5 hash of file
             Log::info('Generating MD5 hash of file');
-            if(config('dropspace.ds_storage_type') == 's3'){
-                $md5 = md5_file('../storage/app/dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
-                Log::info('Calculated MD5 hash of file: '.$md5);
-                Storage::delete('dropspace/temp/'.$resumableIdentifier.'-'.$clientFilename);
+            if (config('dropspace.ds_storage_type') == 's3') {
+                $md5 = md5_file('../storage/app/dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename);
+                Log::info('Calculated MD5 hash of file: ' . $md5);
+                Storage::delete('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename);
             } else {
                 $md5 = md5_file('../storage/app/dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
-                Log::info('Calculated MD5 hash of file: '.$md5);
+                Log::info('Calculated MD5 hash of file: ' . $md5);
             }
-            Log::info('Finished uploading file '. $file->file_identifier . '.' . $file->extension);
-            try{
+            Log::info('Finished uploading file ' . $file->file_identifier . '.' . $file->extension);
+            try {
                 //This post call updates the number of total files uploaded to all DropSpace instances. This number is going to be used on the GitHub page of DropSpace.
                 //Unless you have to disable this, we appreciate if you don't.
                 Http::timeout(5)->post('https://leventdev.me/api/dropspace/file-uploaded');
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Log::info('Could not update uploaded files');
                 Log::info('This isn\'t a big deal, but we like to see how many people use DropSpace, so please report this in an issue on GitHub (leventdev/dropspace)');
-                Log::info('Error: '.$e->getMessage());
+                Log::info('Error: ' . $e->getMessage());
             }
-            return response()->json(['success' => true, 'identifier' => $file->file_identifier,'md5' => $md5]);
+            return response()->json(['success' => true, 'identifier' => $file->file_identifier, 'md5' => $md5]);
         }
         return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
     }
 
     function byteConvert($bytes)
-{
-    if ($bytes == 0)
-        return "0.00 B";
+    {
+        if ($bytes == 0)
+            return "0.00 B";
 
-    $s = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
-    $e = floor(log($bytes, 1024));
+        $s = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+        $e = floor(log($bytes, 1024));
 
-    return round($bytes/pow(1024, $e), 2).$s[$e];
-}
+        return round($bytes / pow(1024, $e), 2) . $s[$e];
+    }
 
     public function setFileDetails($id)
     {
@@ -233,8 +246,8 @@ class FileUploadController extends Controller
                 return view('download-error', ['error' => "You need to be signed in to do that."]);
             }
         }
-        
-        
+
+
         //This function is called when the user wants to set the file's details, this is the view that is shown to the user
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {

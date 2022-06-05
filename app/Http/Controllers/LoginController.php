@@ -29,6 +29,23 @@ class LoginController extends Controller
         }
     }
 
+    public function authenticate_cli(Request $request){
+        $email = $request->input('email');
+        $password = $request->input('password');
+        Log::info("[CLI] Attempting to authenticate user with email: ".$email);
+        if(Auth::attempt(['email' => $email, 'password' => $password])){
+            Log::info("[CLI] User authenticated successfully");
+            //Generate new CLI key for user
+            $user = Auth::user();
+            $user = User::find($user->id);
+            $user->cli_key = bin2hex(random_bytes(16));
+            $user->save();
+            return response()->json(['success'=>true, 'cli_key'=>$user->cli_key]);
+        }
+        Log::info("[CLI] User authentication failed at" . date('Y-m-d H:i:s'));
+        return 'Authentication failed';
+    }
+
     public function authenticate(Request $request){
         $email = $request->input('email');
         $password = $request->input('password');

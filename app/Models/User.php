@@ -25,6 +25,7 @@ class User extends Authenticatable
         'permissions',
         'ename',
         'ecompany',
+        'cli_key'
     ];
 
     /**

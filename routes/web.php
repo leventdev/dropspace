@@ -42,6 +42,12 @@ Route::get('/sharecode', 'App\Http\Controllers\ShareCodeController@inputScreen')
 Route::get('/sharecode/{id}', 'App\Http\Controllers\ShareCodeController@findShareCode');
 //Route for logging in (POST)
 Route::post('/login', 'App\Http\Controllers\LoginController@authenticate')->name('login.post');
+Route::post('/cli/login', 'App\Http\Controllers\LoginController@authenticate_cli')->name('login.cli')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+
+Route::get('/is-secured', function ()
+{
+    return config('dropspace.ds_security_enabled');
+});
 //Route for logging out
 Route::get('/logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
 Route::get('/settings', 'App\Http\Controllers\LoginController@settings')->name('settings');
