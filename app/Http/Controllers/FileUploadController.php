@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class FileUploadController extends Controller
 {
@@ -25,12 +26,39 @@ class FileUploadController extends Controller
     public function uploadChunks()
     {
         //This is gonna be a blast to write
-
+        //Check if auth is required
+        if (config('dropspace.ds_security_enabled') == true) {
+            //Check if the user is logged in
+            if (Auth::check()) {
+            } else {
+                //If the user is not logged in, we can't continue
+                return response()->json(['error' => 'Uploading requires you to be signed in. If this is an error, please contact the admin.'], 400);
+            }
+        }
 
         $totalChunks = request()->resumableTotalChunks;
         $chunkNumber = request()->resumableChunkNumber;
         $resumableIdentifier = request()->resumableIdentifier;
         $clientFilename = request()->resumableFilename;
+
+        if(config('dropspace.ds_max_file_size') != 0){
+            Log::info('Max file size is set to: ' . $this->byteConvert(config('dropspace.ds_max_file_size')));
+            if(request()->resumableTotalSize > config('dropspace.ds_max_file_size')){
+                $maxServerFileSize = $this->byteConvert(config('dropspace.ds_max_file_size'));
+                Log::info('File is larger than the max allowed file size');
+                return response()->json(['error' => 'File size exceeds maximum file size. Max file size: '.$maxServerFileSize], 400);
+            }
+        }
+        //Check available space on server
+        if(config("dropspace.ds_storage_type") == 'local'){
+            $free_space = disk_free_space(storage_path('app/'));
+            if($free_space < request()->resumableTotalSize){
+                Log::info('Not enough space on server');
+                Log::info('Free space on server: ' . $free_space);
+                Log::info('Total size of chunks: ' . request()->resumableTotalSize);
+                return response()->json(['error' => 'Not enough space on server'], 400);
+            }
+        }
 
         if ($totalChunks == 1) {
             //Save file to storage and database
@@ -107,6 +135,11 @@ class FileUploadController extends Controller
             } else {
                 //If the application is not set up with Cloudflare, getting the IP adress of the client is grabbed straight from the request
                 $file->uploader_ip = request()->ip();
+            }
+
+            if(config('dropspace.ds_security_enabled')){
+                //Save user's email to database
+                $file->uploader = Auth::user()->email;
             }
 
             //generate file_identifier
@@ -191,6 +224,17 @@ class FileUploadController extends Controller
 
     public function setFileDetails($id)
     {
+        //Check if auth is required
+        if (config('dropspace.ds_security_enabled') == true) {
+            //Check if the user is logged in
+            if (Auth::check()) {
+            } else {
+                //If the user is not logged in, we can't continue
+                return view('download-error', ['error' => "You need to be signed in to do that."]);
+            }
+        }
+        
+        
         //This function is called when the user wants to set the file's details, this is the view that is shown to the user
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
@@ -206,6 +250,15 @@ class FileUploadController extends Controller
 
     public function saveFileDetails($id, Request $request)
     {
+        //Check if auth is required
+        if (config('dropspace.ds_security_enabled') == true) {
+            //Check if the user is logged in
+            if (Auth::check()) {
+            } else {
+                //If the user is not logged in, we can't continue
+                return view('download-error', ['error' => "You need to be signed in to do that."]);
+            }
+        }
         $file = File::where('file_identifier', $id)->first();
         if ($file == null) {
             return view('download-error', ['error' => "File doesn't exist."]);

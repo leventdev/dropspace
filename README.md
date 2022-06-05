@@ -1,10 +1,14 @@
 <p align="center"><a><img src="/public/mockups/logo.png"></a></p>
 
-<!-- 
-    Insert tags, badges, etc... here
--->
 
 # DropSpace
+<!-- 
+    Insert tags, badges, etc... here
+
+-->
+
+<img src="https://img.shields.io/endpoint?url=https://leventdev.me/api/dropspace/files-uploaded" alt="Files uploaded"></a>  
+(^ that's how many files were ever uploaded to DropSpaces)
 
 ### Simple file sharing made in Laravel
 
@@ -20,6 +24,9 @@ DropSpace is built using [Laravel](https://laravel.com).
 | Feature                                                         | Status             |
 | --------------------------------------------------------------- | ------------------ |
 | File upload (chunked using Resumable.js                         | :white_check_mark: |
+| Server side settings. (Max file size, default expiry, ...)      | :white_check_mark: |
+| Protected uploads (With multiple users)                         | :white_check_mark: |
+| Rich embeds. (Video player or image display)                    | :white_check_mark: |
 | File checksum verification                                      | :white_check_mark: |
 | File sharing in email                                           | :white_check_mark: |
 | File protection                                                 | :white_check_mark: |
@@ -29,7 +36,6 @@ DropSpace is built using [Laravel](https://laravel.com).
 | Auto delete based on download count                             | :white_check_mark: |
 | File download via curl (click-to-copy command)                  | :white_check_mark: |
 | File storage in S3 storage                                      | :white_check_mark: |
-| Dynamic meta tag card image generation using Browsershot        | :x:                |
 | File upload via CLI                                             | :x:                |
 | Auto update                                                     | :x:                |
 | Automatic file compression on uploaded files                    | :x:                |
@@ -50,6 +56,32 @@ Go into the cloned repository
 
 ```
 cd dropspace
+```
+
+Install php8.1
+
+```
+sudo add-apt-repository ppa:ondrej/php
+sudo apt-get update
+```
+
+Install composer
+
+```
+sudo apt install composer
+```
+
+Install dependencies
+
+```
+sudo apt install php8.1-xml php8.1-gd php8.1-curl php8.1-mysql
+```
+
+Install up-to-date NPM
+
+```
+sudo apt install nodejs
+curl -L https://npmjs.org/install.sh | sudo sh
 ```
 
 Install composer dependancies

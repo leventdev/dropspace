@@ -45,3 +45,7 @@ Route::get('/sharecode/{id}', 'App\Http\Controllers\ShareCodeController@findShar
 Route::post('/login', 'App\Http\Controllers\LoginController@authenticate')->name('login.post');
 //Route for logging out
 Route::get('/logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
+Route::get('/settings', 'App\Http\Controllers\LoginController@settings')->name('settings');
+Route::post('/update-settings', 'App\Http\Controllers\LoginController@updateSettings')->name('update-settings');
+Route::get('/invite/{id}', 'App\Http\Controllers\LoginController@invite')->name('invite');
+Route::post('/use-invite', 'App\Http\Controllers\LoginController@useInvite')->name('use-invite');
