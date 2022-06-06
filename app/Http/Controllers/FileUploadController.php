@@ -269,7 +269,19 @@ class FileUploadController extends Controller
             if (Auth::check()) {
             } else {
                 //If the user is not logged in, we can't continue
-                return view('download-error', ['error' => "You need to be signed in to do that."]);
+                if (request()->has('cli_key')) {
+                    //Check if CLI key is valid
+                    $user = User::where('cli_key', request()->get('cli_key'))->first();
+                    if ($user) {
+                        //User is valid, log them in
+                        Auth::login($user);
+                    } else {
+                        //User is not valid, return error
+                        return response()->json(['error' => 'Invalid CLI key']);
+                    }
+                } else {
+                    return view('download-error', ['error' => "You need to be signed in to do that."]);
+                }
             }
         }
         $file = File::where('file_identifier', $id)->first();

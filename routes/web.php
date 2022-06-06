@@ -17,6 +17,9 @@ Route::get('/', 'App\Http\Controllers\LoginController@goToUpload')->name('upload
 
 Route::get('/cli/domain-check', function ()
 {
+    if(config('dropspace.ds_security_enabled')){
+        return 'Domain secured';
+    }
     return 'Domain valid';
 });
 Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
@@ -32,6 +35,8 @@ Route::post('/save-file-details/{file_id}', 'App\Http\Controllers\FileUploadCont
 Route::get('/download-file/{file_id}', 'App\Http\Controllers\FileDownloadController@returnFile');
 //Route to downloading a file (The view, not the actual file)
 Route::get('/download/{file_id}', 'App\Http\Controllers\FileDownloadViewController@returnFile');
+Route::get('/cli/download/{file_id}', 'App\Http\Controllers\FileDownloadController@returnCLIFile');
+Route::get('/cli/check/{file_id}', 'App\Http\Controllers\FileDownloadController@checkCLIFile');
 //Route to send a file to an email
 Route::post('/send-mail-file', 'App\Http\Controllers\FileDownloadViewController@sendMail');
 //Route to getting a new ShareCode

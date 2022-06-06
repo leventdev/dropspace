@@ -131,4 +131,98 @@ class FileDownloadController extends Controller
             return view('download-error', ['error' => $e->getMessage() . '. Contact admin.']);
         }
     }
+
+    public function checkCLIFile($file_id){
+        try{
+            $file = File::where('file_identifier', $file_id)->first();
+            if ($file->expiry_date != null) {
+                $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
+                if ($date->isPast()) {
+                    //Check how long ago the file expired
+                    $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
+                    return 'This file is past the expiration date. This file expired ' . $date->diffForHumans();
+                }
+            }
+            if ($file->download_limit != 0) {
+                if ($file->download_count >= $file->download_limit) {
+                    return 'This file has reached its download limit.';
+                }
+            }
+            if ($file->is_protected == 1) {
+                //If the file is protected, the hash of the password is checked
+                if ($file->password == request()->hash) {
+                    //If the hash of the password is correct, the file is returned
+                    return 'Can start download';
+                } else {
+                    //If the hash of the password is incorrect, the user is redirected to an error page
+                    return 'Missing password';
+                }
+            } else {
+                //If the file is not protected, the file is returned
+                return 'Can start download';
+            }
+        }
+        catch(Exception $e){
+            //If an error occurs, the user is redirected to an error page
+            return response()->json(['error' => $e->getMessage() . '. Contact admin.']);
+        }
+    }
+
+    public function returnCLIFile($file_id)
+    {
+        try {
+            //This function returns the file from the storage.
+            //$file is the data of the file stored in the database
+            $file = File::where('file_identifier', $file_id)->first();
+            //Check if the file can expire
+
+            if ($file->expiry_date != null) {
+                $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
+                if ($date->isPast()) {
+                    //Check how long ago the file expired
+                    $date = Carbon::parse($file->expiry_date); // now date is a carbon instance
+                    return response()->json(['error' => 'This file is past the expiration date. This file expired ' . $date->diffForHumans()]);
+                }
+            }
+            if ($file->download_limit != 0) {
+                if ($file->download_count >= $file->download_limit) {
+                    return response()->json(['error' => 'This file has reached its download limit.']);
+                }
+            }
+            if ($file->is_protected == 1) {
+                //If the file is protected, the hash of the password is checked
+                if ($file->password == request()->hash) {
+                    //If the hash of the password is correct, the file is returned
+                    $file->download_count = $file->download_count + 1;
+                    $file->save();
+                    if (config('dropspace.ds_storage_type') == 'local') {
+                        return Storage::download('dropspace/uploads/' . $file->path, $file->name);
+                    } else {
+                        //return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $file->name);
+                        $tempFile = tempnam(sys_get_temp_dir(), $file->name);
+                        copy(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $tempFile);
+                        return response()->download($tempFile, $file->name);
+                    }
+                } else {
+                    //If the hash of the password is incorrect, the user is redirected to an error page
+                    return response()->json(['error' => 'An error occured with the authorization hash of this download. Please try again or contact the admin.']);
+                }
+            } else {
+                //If the file is not protected, the file is returned
+                $file->download_count = $file->download_count + 1;
+                $file->save();
+                if (config('dropspace.ds_storage_type') == 'local') {
+                    return Storage::download('dropspace/uploads/' . $file->path, $file->name);
+                } else {
+                    //return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $file->name);
+                    $tempFile = tempnam(sys_get_temp_dir(), $file->name);
+                    copy(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $tempFile);
+                    return response()->download($tempFile, $file->name);
+                }
+            }
+        } catch (Exception $e) {
+            //If an error occurs, the user is redirected to an error page
+            return response()->json(['error' => $e->getMessage() . '. Contact admin.']);
+        }
+    }
 }
