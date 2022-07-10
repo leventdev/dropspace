@@ -16,14 +16,12 @@ use Illuminate\Support\Facades\Log;
 class FileDownloadViewController extends Controller
 {
     //
+    /**
+     * It takes the file_id and email from the request, finds the file in the database, generates a
+     * download link, and sends an email to the email address provided
+     */
     public function sendMail()
     {
-        /*$fileid = $request->file_id;
-        $email = $request->email;
-        $file = DB::table('files')->where('file_identifier', $fileid)->first();
-        $filename = $file->name . '.' . $file->extension;
-        $url = url('/file/download/' . $fileid . '?hash=' . $request->hash);
-        Mail::to($email)->send(new \App\Mail\sendFileShare($url, $filename));*/
         $fileid = request()->file_id;
         $email = request()->email;
         $file = File::where('file_identifier', $fileid)->first();
@@ -53,6 +51,13 @@ class FileDownloadViewController extends Controller
         Log::info('Email sent to ' . $email);
     }
 
+    /**
+     * This function returns the download view of a file
+     * 
+     * @param file_id The file's identifier
+     * 
+     * @return The download view of a file.
+     */
     public function returnFile($file_id)
     {
         try {
