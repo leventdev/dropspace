@@ -9,11 +9,25 @@ use App\Models\File;
 class ShareCodeController extends Controller
 {
     //
+    /**
+     * It returns the view called sharecode-search
+     * 
+     * @return The view sharecode-search.blade.php
+     */
     public function inputScreen()
     {
         return view('sharecode-search');
     }
 
+    /**
+     * This checks if the sharecode exists. If it's expired, if it's been used, 
+     * if neither of those are true, it redirects the user to the download page with the file
+     * 
+     * @param id The ShareCode
+     * 
+     * @return A view with the error message.
+     * @return A redirect to the download page with the file.
+     */
     public function findShareCode($id)
     {
         $sharecode = ShareCode::where('code', strtoupper($id))->first();
@@ -41,6 +55,13 @@ class ShareCodeController extends Controller
         }
     }
 
+    /**
+     * It generates a random code, saves it to the database, and returns it to the user
+     * 
+     * @param Request request The request object
+     * 
+     * @return A JSON object containing the code and expiry date of the share code.
+     */
     public function generateShareCode(Request $request)
     {
         //
