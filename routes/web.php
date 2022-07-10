@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,9 +11,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+//Route to default page. Login page if not authenticated, upload page if authenticated or security not enabled.
 Route::get('/', 'App\Http\Controllers\LoginController@goToUpload')->name('upload');
 
+//Route for uploading chunks of files.
 Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks');
 //Route to updating the expiry of a file
 Route::post('/update-expiry', 'App\Http\Controllers\FileDownloadController@updateExpiry');
@@ -40,7 +40,11 @@ Route::get('/sharecode/{id}', 'App\Http\Controllers\ShareCodeController@findShar
 Route::post('/login', 'App\Http\Controllers\LoginController@authenticate')->name('login.post');
 //Route for logging out
 Route::get('/logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
+//Route for settings
 Route::get('/settings', 'App\Http\Controllers\LoginController@settings')->name('settings');
+//Route for saving settings
 Route::post('/update-settings', 'App\Http\Controllers\LoginController@updateSettings')->name('update-settings');
+//Route for redeeming an invite
 Route::get('/invite/{id}', 'App\Http\Controllers\LoginController@invite')->name('invite');
+//Route for using an invite
 Route::post('/use-invite', 'App\Http\Controllers\LoginController@useInvite')->name('use-invite');
