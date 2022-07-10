@@ -34,13 +34,14 @@ class LoginController extends Controller
      * 
      * @return A view.
      */
-    public function goToUpload(Request $request){
-        if(config('dropspace.ds_security_enabled')== true){
-            if(Auth::check()){
+    public function goToUpload(Request $request)
+    {
+        if (config('dropspace.ds_security_enabled') == true) {
+            if (Auth::check()) {
                 return view('upload');
             }
             return view('sign-in');
-        }else{
+        } else {
             return view('upload');
         }
     }
@@ -53,12 +54,13 @@ class LoginController extends Controller
      * 
      * @return The user is being returned.
      */
-    public function authenticate(Request $request){
+    public function authenticate(Request $request)
+    {
         $email = $request->input('email');
         $password = $request->input('password');
         $remember = $request->input('remember-me');
         Log::info('Attempting to authenticate user: ' . $email);
-        if(Auth::attempt(['email' => $email, 'password' => $password], $remember)) {
+        if (Auth::attempt(['email' => $email, 'password' => $password], $remember)) {
             // Authentication passed...
             Log::info('Authentication successful');
             $request->session()->regenerate();
@@ -79,14 +81,15 @@ class LoginController extends Controller
      * 
      * @return The user's details are being returned.
      */
-    public function settings(Request $request){
+    public function settings(Request $request)
+    {
         //Get user's details
         $user = Auth::user();
-        if(Auth::check()){
+        if (Auth::check()) {
             $name = $user->ename;
             $company = $user->ecompany;
             return view('settings', ['name' => $name, 'company' => $company]);
-        }else{
+        } else {
             return redirect('/');
         }
     }
@@ -107,29 +110,30 @@ class LoginController extends Controller
      * 
      * @return The user's details are being returned.
      */
-    public function updateSettings(Request $request){
+    public function updateSettings(Request $request)
+    {
         $authuser = Auth::user();
-        if(Auth::check()){
+        if (Auth::check()) {
             //Get user's details
             $user = User::find($authuser->id);
-            if($request->input('password') != ''){
+            if ($request->input('password') != '') {
                 $user->password = bcrypt($request->input('password'));
             }
-            if($request->input('name') != $user->ename){
+            if ($request->input('name') != $user->ename) {
                 $user->ename = $request->input('name');
-                if($request->input('name') == ''){
+                if ($request->input('name') == '') {
                     $user->ename = null;
                 }
             }
-            if($request->input('company') != $user->ecompany){
+            if ($request->input('company') != $user->ecompany) {
                 $user->ecompany = $request->input('company');
-                if($request->input('company') == ''){
+                if ($request->input('company') == '') {
                     $user->ecompany = null;
                 }
             }
             $user->save();
             return redirect('/settings');
-        }else{
+        } else {
             return redirect('/');
         }
     }
@@ -143,19 +147,20 @@ class LoginController extends Controller
      * 
      * @return A view
      */
-    public function invite($id, Request $request){
+    public function invite($id, Request $request)
+    {
         //Check if invite exists
-        if(Invite::where('code', $id)->exists()){
+        if (Invite::where('code', $id)->exists()) {
             //Chekc if invite is used
             $invite = Invite::where('code', $id)->first();
-            if($invite->used == true){
+            if ($invite->used == true) {
                 //Invite is used
                 return view('download-error', ['error' => 'This invite has already been used.']);
             }
             //Invite is not used
             //Display the register page
             return view('invite', ['invite_code' => $id]);
-        }else{
+        } else {
             return view('download-error', ['error' => 'Invite does not exist.']);
         }
     }
@@ -176,10 +181,11 @@ class LoginController extends Controller
      * 
      * @return The user is being returned.
      */
-    public function useInvite(Request $request){
-        if(Invite::where('code', $request->input('invite_code'))->exists()){
+    public function useInvite(Request $request)
+    {
+        if (Invite::where('code', $request->input('invite_code'))->exists()) {
             $invite = Invite::where('code', $request->input('invite_code'))->first();
-            if($invite->used == true){
+            if ($invite->used == true) {
                 //Invite is used
                 return view('download-error', ['error' => 'This invite has already been used.']);
             }
@@ -191,10 +197,10 @@ class LoginController extends Controller
             if ($user) {
                 return back()->withErrors(['email' => 'This username is already registered.',]);
             }
-            if($request->input('company') == ''){
+            if ($request->input('company') == '') {
                 $ecompany = null;
             }
-            if($request->input('ename') == ''){
+            if ($request->input('ename') == '') {
                 $ename = null;
             }
             User::create([
@@ -207,7 +213,7 @@ class LoginController extends Controller
             $invite->used = true;
             $invite->save();
             return redirect('/');
-        }else{
+        } else {
             return view('download-error', ['error' => 'Invite does not exist.']);
         }
     }
