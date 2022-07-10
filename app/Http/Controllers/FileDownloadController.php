@@ -8,10 +8,19 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class FileDownloadController extends Controller
 {
     //
+    /**
+     * It returns the download limit and expiry date of a file, and if the file is in danger of
+     * expiring, it returns the danger colors.
+     * 
+     * @param Request request The request object
+     * 
+     * @return the download limit, expiry date, and the colors of the progress bars.
+     */
     public function updateExpiry(Request $request)
     {
 
@@ -74,6 +83,13 @@ class FileDownloadController extends Controller
         ]);
     }
 
+    /**
+     * This function returns the file based on stuff like pass protection, download limit, and expiry date.
+     * 
+     * @param file_id The file identifier of the file you want to return.
+     * 
+     * @return The file is being returned.
+     */
     public function returnFile($file_id)
     {
         try {
@@ -104,10 +120,9 @@ class FileDownloadController extends Controller
                     if (config('dropspace.ds_storage_type') == 'local') {
                         return Storage::download('dropspace/uploads/' . $file->path, $file->name);
                     } else {
-                        //return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $file->name);
-                        $tempFile = tempnam(sys_get_temp_dir(), $file->name);
-                        copy(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $tempFile);
-                        return response()->download($tempFile, $file->name);
+                        Log::info('Returning file from S3');
+                        header('Content-Disposition: attachment; filename="' . basename($file->name) . '"');
+                        return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)));
                     }
                 } else {
                     //If the hash of the password is incorrect, the user is redirected to an error page
@@ -120,10 +135,9 @@ class FileDownloadController extends Controller
                 if (config('dropspace.ds_storage_type') == 'local') {
                     return Storage::download('dropspace/uploads/' . $file->path, $file->name);
                 } else {
-                    //return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $file->name);
-                    $tempFile = tempnam(sys_get_temp_dir(), $file->name);
-                    copy(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)), $tempFile);
-                    return response()->download($tempFile, $file->name);
+                    Log::info('Returning file from S3');
+                    header('Content-Disposition: attachment; filename="' . basename($file->name) . '"');
+                    return readfile(Storage::disk('s3')->temporaryUrl('dropspace/uploads/' . $file->path, Carbon::now()->addMinutes(5)));
                 }
             }
         } catch (Exception $e) {
