@@ -133,6 +133,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
                                     <span class="mt-2 block text-sm font-medium text-gray-50"> Click to upload a file </span>
+                                    <span class="mt-2 block text-xs font-bold text-gray-50"> (Max 20mb) </span>
                                 </button>
                                 <div style="display: none;" id="progress-message" class="mb-0 mt-2 text-lg font-medium dark:text-white">Uploading...</div>
                                 <div id="loader-big" style="display: none;" class="w-64 mt-1 bg-gray-200 rounded-full h-4 dark:bg-gray-500">
@@ -173,6 +174,7 @@
         simultaneousUploads: 3,
         maxChunkRetries: 10,
         chunkSize: 5000000,
+        maxFileSize: 20971520,
     });
 
     r.assignBrowse(document.getElementById('buttonid'));
