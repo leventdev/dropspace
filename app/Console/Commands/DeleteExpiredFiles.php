@@ -26,10 +26,9 @@ class DeleteExpiredFiles extends Command
      */
     protected $description = 'Removes all files from storage that have expired.';
 
+    
     /**
-     * Execute the console command.
-     *
-     * @return int
+     * It checks for expired files and sharecodes and deletes them
      */
     public function handle()
     {
