@@ -11,14 +11,30 @@ use Illuminate\Support\Facades\Log;
 class LoginController extends Controller
 {
     //
+    /**
+     * It logs out the user and redirects them to the homepage
+     * 
+     * @param Request request The request object represents the HTTP request and has properties for the
+     * request query string, parameters, body, HTTP method, and so on.
+     * 
+     * @return A redirect to the root route.
+     */
     public function logout(Request $request)
     {
         Auth::logout();
         return redirect('/');
     }
 
+    /**
+     * If the security is enabled, check if the user is logged in, if they are, show them the upload
+     * page, if they aren't, show them the sign in page. If the security is disabled, show them the
+     * upload page
+     * 
+     * @param Request request The request object.
+     * 
+     * @return A view.
+     */
     public function goToUpload(Request $request){
-        //Check if ds_security_enabled is true, if it is, check if the user is authenticated.
         if(config('dropspace.ds_security_enabled')== true){
             if(Auth::check()){
                 return view('upload');
@@ -29,6 +45,14 @@ class LoginController extends Controller
         }
     }
 
+    /**
+     * Authenticates the user and redirects them to the upload page if they are authenticated, or to the
+     * sign in page if the credentials are incorrect.
+     * 
+     * @param Request request The request object.
+     * 
+     * @return The user is being returned.
+     */
     public function authenticate(Request $request){
         $email = $request->input('email');
         $password = $request->input('password');
@@ -46,6 +70,15 @@ class LoginController extends Controller
         return back()->withErrors(['email' => 'These credentials do not match our records.',]);
     }
 
+    /**
+     * The function checks if the user is logged in, if so, it gets the user's details and passes them
+     * to the settings view
+     * 
+     * @param Request request This is the request object that contains all the information about the
+     * request.
+     * 
+     * @return The user's details are being returned.
+     */
     public function settings(Request $request){
         //Get user's details
         $user = Auth::user();
@@ -58,12 +91,23 @@ class LoginController extends Controller
         }
     }
 
+    /**
+     * This function updates the user's settings.
+     * 
+     * In detail:
+     * 1. Authenticate the user
+     * 2. Get the user's details
+     * 3. If password is not empty, update the user's password
+     * 4. If name is not empty, update the user's name
+     * 5. If company is not empty, update the user's company
+     * 6. Save the user's updated details
+     * 7. Redirect the user to the settings page
+     * 
+     * @param Request request The request object.
+     * 
+     * @return The user's details are being returned.
+     */
     public function updateSettings(Request $request){
-        //Type: post call
-        //Check authentication, if password is not empty, update the user's password.
-        //Check if the name changed, if it did, update the user's name.
-        //Check if the company changed, if it did, update the user's company.
-        //Return to the settings page.
         $authuser = Auth::user();
         if(Auth::check()){
             //Get user's details
@@ -90,6 +134,15 @@ class LoginController extends Controller
         }
     }
 
+    /**
+     * It checks if the invite exists, if it does, it checks if it's used, if it's not, it displays the
+     * register page
+     * 
+     * @param id The invite code
+     * @param Request request The request object
+     * 
+     * @return A view
+     */
     public function invite($id, Request $request){
         //Check if invite exists
         if(Invite::where('code', $id)->exists()){
@@ -107,6 +160,22 @@ class LoginController extends Controller
         }
     }
 
+    /**
+     * This function registers a new user from an invite.
+     * 
+     * In detail:
+     * 1. Check if the invite exists
+     * 2. Check if the invite is used
+     * 3. Check if the email is already in use
+     * 4. Check if the username is already in use
+     * 5. Create a new user
+     * 6. Set the invite to used
+     * 7. Redirect the user to the login page
+     * 
+     * @param Request request The request object.
+     * 
+     * @return The user is being returned.
+     */
     public function useInvite(Request $request){
         if(Invite::where('code', $request->input('invite_code'))->exists()){
             $invite = Invite::where('code', $request->input('invite_code'))->first();
@@ -114,12 +183,6 @@ class LoginController extends Controller
                 //Invite is used
                 return view('download-error', ['error' => 'This invite has already been used.']);
             }
-            //Invite is not used
-            /*$name = $this->ask('What should the username be?');
-            $email = $this->ask('What should the email be?');
-            $password = $this->secret('What should the password be? (The input is hidden)');
-            $ecompany = $this->ask('Where does this user work? (Leave blank if you don\'t want to enter a company)');
-            $ename = $this->ask('How is this user called? (Leave blank if you don\'t want to enter a name)');*/
             $user = User::where('email', $request->input('email'))->first();
             if ($user) {
                 return back()->withErrors(['email' => 'This email is already registered.',]);
