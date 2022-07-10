@@ -24,9 +24,9 @@ class ClearUploads extends Command
     protected $description = 'Removes all files from storage and clears the database.';
 
     /**
-     * Execute the console command.
-     *
-     * @return int
+     * It deletes all files from the database and from the storage
+     * 
+     * @return The return value is a string.
      */
     public function handle()
     {

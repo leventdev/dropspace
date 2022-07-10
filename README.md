@@ -7,7 +7,7 @@
 
 -->
 
-<img src="https://img.shields.io/endpoint?url=https://leventdev.me/api/dropspace/files-uploaded" alt="Files uploaded"></a>  
+<img src="https://img.shields.io/endpoint?url=https://leventdev.com/api/dropspace/files-uploaded" alt="Files uploaded"></a>  
 (^ that's how many files were ever uploaded to DropSpaces)
 
 ### Simple file sharing made in Laravel
@@ -17,6 +17,8 @@
 DropSpace is an easy way to self-host a file drop. Simply upload your file, and share the link. That's all!  
 DropSpace is built using [Laravel](https://laravel.com).
 
+> DropSpace is no longer being developed for **new** features, but **will be maintained** for bugs and security issues.
+
 ![](/public/mockups/download.png)
 
 # Features
@@ -25,7 +27,7 @@ DropSpace is built using [Laravel](https://laravel.com).
 | --------------------------------------------------------------- | ------------------ |
 | File upload (chunked using Resumable.js                         | :white_check_mark: |
 | Server side settings. (Max file size, default expiry, ...)      | :white_check_mark: |
-| Protected uploads (With multiple users)                         | :white_check_mark: |
+| User system for uploads (With multiple users)                   | :white_check_mark: |
 | Rich embeds. (Video player or image display)                    | :white_check_mark: |
 | File checksum verification                                      | :white_check_mark: |
 | File sharing in email                                           | :white_check_mark: |
@@ -36,10 +38,6 @@ DropSpace is built using [Laravel](https://laravel.com).
 | Auto delete based on download count                             | :white_check_mark: |
 | File download via curl (click-to-copy command)                  | :white_check_mark: |
 | File storage in S3 storage                                      | :white_check_mark: |
-| File upload via CLI                                             | :x:                |
-| Auto update                                                     | :x:                |
-| Automatic file compression on uploaded files                    | :x:                |
-
 <!-- list features todo -->
 
 ![](/public/mockups/upload-settings.png)

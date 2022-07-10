@@ -30,7 +30,6 @@
     <meta property="twitter:image" content="{{asset('dropspace-cover.png')}}">
     <!--<script src="bower_components/resumablejs/resumable.js" type="application/javascript"></script>-->
     <script src="https://cdnout.com/resumable.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js" integrity="sha512-iWbxiCA4l1WTD0rRctt/BfDEmDC5PiVqFc6c1Rhj/GKjuj6tqrjrikTw3Sypm/eEgMa7jSOS9ydmDlOtxJKlSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js"></script>
 
 </head>
@@ -192,7 +191,6 @@
     });
 
     var identifier;
-    var servermd5;
 
     r.on('fileSuccess', function(file, message) {
         console.log(message);
@@ -201,12 +199,7 @@
         //Read message as json
 
         identifier = JSON.parse(message).identifier;
-        servermd5 = JSON.parse(message).md5;
-        //window.location.href = "{{url('set-file-details')}}/" + identifier;
-
-        //checksum = md5 of file.file
-        document.getElementById('progress-message').innerText = "Comparing checksums...";
-        calculate(file.file);
+        window.location.href = "{{url('set-file-details')}}/" + identifier;
     });
 
     r.on('fileError', function(file, message) {
@@ -243,89 +236,6 @@
             }, 350);
         }
     });
-
-    function compareHashes(clientmd5) {
-        console.log('md5 of the file (client): ' + clientmd5);
-        console.log('md5 of the file (server): ' + servermd5);
-        if (clientmd5 == servermd5) {
-            console.log('md5-s match');
-            //window.location.href = "{{url('set-file-details')}}/" + identifier;
-            window.location.href = "{{url('set-file-details')}}/" + identifier;
-        } else {
-            console.log(message);
-            const btn = document.getElementById('buttonid');
-            btn.classList.remove("button--loading");
-            btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Checksum verification failed. Please try uploading again. </span>';
-            document.getElementById('loader-big').style.display = "none";
-        }
-    }
-
-    function calculateMD5Hash(file, bufferSize) {
-        var def = Q.defer();
-
-        var fileReader = new FileReader();
-        var fileSlicer = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
-        var hashAlgorithm = new SparkMD5();
-        var totalParts = Math.ceil(file.size / bufferSize);
-        var currentPart = 0;
-        var startTime = new Date().getTime();
-
-        fileReader.onload = function(e) {
-            currentPart += 1;
-
-            def.notify({
-                currentPart: currentPart,
-                totalParts: totalParts
-            });
-
-            var buffer = e.target.result;
-            hashAlgorithm.appendBinary(buffer);
-
-            if (currentPart < totalParts) {
-                processNextPart();
-                return;
-            }
-
-            def.resolve({
-                hashResult: hashAlgorithm.end(),
-                duration: new Date().getTime() - startTime
-            });
-        };
-
-        fileReader.onerror = function(e) {
-            def.reject(e);
-        };
-
-        function processNextPart() {
-            var start = currentPart * bufferSize;
-            var end = Math.min(start + bufferSize, file.size);
-            fileReader.readAsBinaryString(fileSlicer.call(file, start, end));
-        }
-
-        processNextPart();
-        return def.promise;
-    }
-
-    var check;
-
-    function calculate(passedFile) {
-        var file = passedFile;
-        var bufferSize = Math.pow(1024, 2) * 10; // 10MB
-
-        calculateMD5Hash(file, bufferSize).then(
-            function(result) {
-                // Success
-                console.log(result);
-                compareHashes(result.hashResult);
-            },
-            function(err) {
-                // There was an error,
-            },
-            function(progress) {
-                // We get notified of the progress as it is executed
-                console.log(progress.currentPart, 'of', progress.totalParts, 'Total bytes:', progress.currentPart * bufferSize, 'of', progress.totalParts * bufferSize);
-            });
-    }
 </script>
 
 </html>

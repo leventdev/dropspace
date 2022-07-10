@@ -22,9 +22,9 @@ class registerUser extends Command
     protected $description = 'Creates a new user';
 
     /**
-     * Execute the console command.
-     *
-     * @return int
+     * 
+     * Registers a user
+     * 
      */
     public function handle()
     {
