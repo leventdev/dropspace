@@ -81,6 +81,7 @@
                                             <span class="flex flex-col row-span-1 row-end-3 mt-4">
                                                 <span class="text-sm font-medium text-gray-900" id="availability-label">Expiry</span>
                                                 <span class="text-sm text-gray-500" id="availability-description">Set when the file share should expire, after expiry, the file is deleted.</span>
+                                                <span class="text-xs font-semibold text-red-500" id="availability-description">(DEMO: Server will delete files after one week, even if expiry is set to more)</span>
                                             </span>
                                             <!--<input type="password" onsubmit="" name="password" id="passwordbox" value="" readonly placeholder="**********" class="mt-2 row-end-4 col-span-2 relative items-center shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">-->
                                             <div class="mt-2 row-end-4 col-span-2">
