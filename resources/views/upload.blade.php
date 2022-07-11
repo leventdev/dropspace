@@ -172,6 +172,7 @@
         simultaneousUploads: 3,
         maxChunkRetries: 10,
         chunkSize: 5000000,
+        forceChunkSize: true,
     });
 
     r.assignBrowse(document.getElementById('buttonid'));
