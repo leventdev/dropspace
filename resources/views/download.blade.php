@@ -479,7 +479,7 @@
         }
     </style>
     <div class="bg-gray-800 min-h-full px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
-    @if (config('dropspace.ds_security_enabled') && Auth::check())
+        @if (config('dropspace.ds_security_enabled') && Auth::check())
         <div class="absolute top-4 right-6 grid grid-cols-1 grid-rows-2">
             <div>
                 <button type="button" onclick="window.location.href='/settings/'" class="inline-flex justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -586,7 +586,55 @@
                         </div>
                     </div>
                 </div>
+                <div aria-live="assertive" class="fixed md:flex hidden inset-0 items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
+                    <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
+                        <div class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+                            <div class="p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <!-- Heroicon name: outline/inbox -->
+
+                                        <svg fill="currentColor" class="text-gray-400 h-6 w-6">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.463 2 11.97c0 4.404 2.865 8.14 6.839 9.458.5.092.682-.216.682-.48 0-.236-.008-.864-.013-1.695-2.782.602-3.369-1.337-3.369-1.337-.454-1.151-1.11-1.458-1.11-1.458-.908-.618.069-.606.069-.606 1.003.07 1.531 1.027 1.531 1.027.892 1.524 2.341 1.084 2.91.828.092-.643.35-1.083.636-1.332-2.22-.251-4.555-1.107-4.555-4.927 0-1.088.39-1.979 1.029-2.675-.103-.252-.446-1.266.098-2.638 0 0 .84-.268 2.75 1.022A9.606 9.606 0 0112 6.82c.85.004 1.705.114 2.504.336 1.909-1.29 2.747-1.022 2.747-1.022.546 1.372.202 2.386.1 2.638.64.696 1.028 1.587 1.028 2.675 0 3.83-2.339 4.673-4.566 4.92.359.307.678.915.678 1.846 0 1.332-.012 2.407-.012 2.734 0 .267.18.577.688.48C19.137 20.107 22 16.373 22 11.969 22 6.463 17.522 2 12 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                                        <p class="text-sm font-medium text-gray-900">DropSpace is on GitHub</p>
+                                        <p class="mt-1 text-sm text-gray-500">Get started with running your own DropSpace instance, check GitHub to get started.</p>
+                                        <div class="mt-3 flex space-x-7">
+                                            <button onclick="window.open('https://github.com/leventdev/dropspace','_blank')"" type=" button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Visit repository</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
+            <div aria-live="assertive" class="md:hidden sm:visible inset-0 sm:flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start">
+                <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
+                    <div class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <!-- Heroicon name: outline/inbox -->
+
+                                    <svg fill="currentColor" class="text-gray-400 h-6 w-6">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.463 2 11.97c0 4.404 2.865 8.14 6.839 9.458.5.092.682-.216.682-.48 0-.236-.008-.864-.013-1.695-2.782.602-3.369-1.337-3.369-1.337-.454-1.151-1.11-1.458-1.11-1.458-.908-.618.069-.606.069-.606 1.003.07 1.531 1.027 1.531 1.027.892 1.524 2.341 1.084 2.91.828.092-.643.35-1.083.636-1.332-2.22-.251-4.555-1.107-4.555-4.927 0-1.088.39-1.979 1.029-2.675-.103-.252-.446-1.266.098-2.638 0 0 .84-.268 2.75 1.022A9.606 9.606 0 0112 6.82c.85.004 1.705.114 2.504.336 1.909-1.29 2.747-1.022 2.747-1.022.546 1.372.202 2.386.1 2.638.64.696 1.028 1.587 1.028 2.675 0 3.83-2.339 4.673-4.566 4.92.359.307.678.915.678 1.846 0 1.332-.012 2.407-.012 2.734 0 .267.18.577.688.48C19.137 20.107 22 16.373 22 11.969 22 6.463 17.522 2 12 2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3 w-0 flex-1 pt-0.5">
+                                    <p class="text-sm font-medium text-gray-900">Check DropSpace on GitHub</p>
+                                    <p class="mt-1 text-sm text-gray-500">Get started with running your own DropSpace instance, check GitHub to get started.</p>
+                                    <div class="mt-3 flex space-x-7">
+                                        <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Visit repository</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
