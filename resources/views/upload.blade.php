@@ -179,6 +179,14 @@
     r.assignBrowse(document.getElementById('buttonid'));
     r.assignDrop(document.body);
 
+    document.body.addEventListener('paste', function(e) {
+        var item = e.clipboardData.items[0];
+        if (item.kind === 'file') {
+            var file = item.getAsFile();
+            r.addFile(file);
+        }
+    })
+
     // If r has file added, start uploading
     r.on('fileAdded', function(file) {
         r.upload();
