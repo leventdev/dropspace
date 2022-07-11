@@ -71,11 +71,7 @@ class DeleteExpiredFiles extends Command
         //Check for expired files based on ds_auto_expiry_days no matter if the file has an expiry date specified
         if(config('dropspace.ds_auto_expiry')){
             Log::info('Starting removal of expired files (for no-expiry options).');
-            $files = File::all()->where([
-                ['expiry_date', null],
-                ['deleted_for_expiry', 0],
-                ['download_limit', 0]
-            ]);
+            $files = File::all()->where(['deleted_for_expiry', 0]);
             foreach ($files as $file) {
                 $date = Carbon::parse($file->created_at);
                 $date->addDays(config('dropspace.ds_auto_expiry_days'));
