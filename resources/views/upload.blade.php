@@ -219,7 +219,7 @@
     });
 
     r.on('fileError', function(file, message) {
-        console.log(message);
+        Sentry.captureException(message);
         const btn = document.getElementById('buttonid');
         btn.classList.remove("button--loading");
         const obj = JSON.parse(message);
