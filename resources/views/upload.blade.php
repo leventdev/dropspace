@@ -31,6 +31,7 @@
     <!--<script src="bower_components/resumablejs/resumable.js" type="application/javascript"></script>-->
     <script src="https://cdnout.com/resumable.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js"></script>
+    <script src="https://browser.sentry-cdn.com/7.10.0/bundle.min.js" crossorigin="anonymous"></script>
 
 </head>
 
@@ -96,7 +97,7 @@
         }
     </style>
     <div class="bg-gray-800 min-h-full px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
-    @if (config('dropspace.ds_security_enabled') && Auth::check())
+        @if (config('dropspace.ds_security_enabled') && Auth::check())
         <div class="absolute top-4 right-6 grid grid-cols-1 grid-rows-2">
             <div>
                 <button type="button" onclick="window.location.href='/settings/'" class="inline-flex justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -158,6 +159,16 @@
     </script>
 </body>
 <script>
+    Sentry.init({
+        dsn: "https://fdeea101835647caa8416c4d28e13ca2@o1327476.ingest.sentry.io/6589292",
+
+        // Set tracesSampleRate to 1.0 to capture 100%
+        // of transactions for performance monitoring.
+        // We recommend adjusting this value in production
+        tracesSampleRate: 1.0,
+    });
+
+
     /*
     document.getElementById('buttonid').addEventListener('click', function() {
         document.getElementById('fileid').click();
@@ -193,7 +204,6 @@
         btn.innerText = "";
         document.getElementById('loader-big').style.display = "block";
         document.getElementById('progress-message').style.display = "block";
-        document.getElementById('upload-icon').style.display = 'none';
     });
 
     var identifier;

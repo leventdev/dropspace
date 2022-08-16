@@ -11,6 +11,7 @@
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.0",
+        "sentry/sentry-laravel": "^2.13",
         "simplesoftwareio/simple-qrcode": "~4"
     },
     "require-dev": {
