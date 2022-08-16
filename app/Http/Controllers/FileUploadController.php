@@ -143,6 +143,11 @@ class FileUploadController extends Controller
         //Save file to storage
         Log::info('Received chunk [' . $chunkNumber . '] of [' . $totalChunks . '] for file [' . $resumableIdentifier . ']. Saving chunk.');
         Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
+        //Get file size of the chunk we just received
+        $chunkSize = request()->file('file')->getSize();
+        //Get the file size of the chunk we just saved to storage
+        $chunkSizeOnStorage = Storage::size('dropspace/chunks/' . $resumableIdentifier . '/' . $chunkNumber . '-' . $resumableIdentifier);
+        Log::info('['.$chunkNumber.'] Received chunk size: ' . $chunkSize . ' bytes. Saved chunk size: ' . $chunkSizeOnStorage . ' bytes');
         //If the chunk number is the same as the total chunks, combine the chunks and save the file
         if ($chunkNumber == $totalChunks) {
             //Create new file
