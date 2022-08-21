@@ -28,9 +28,8 @@
     <meta property="twitter:title" content="Upload | DropSpace">
     <meta property="twitter:description" content="DropSpace file upload">
     <meta property="twitter:image" content="{{asset('dropspace-cover.png')}}">
-    <!--<script src="bower_components/resumablejs/resumable.js" type="application/javascript"></script>-->
-    <script src="https://cdnout.com/resumable.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js"></script>
+    <script src="<?php echo asset('js/resumable.js') ?>"></script>
+    <script src="<?php echo asset('js/ajax.js') ?>"></script>
 
 </head>
 
@@ -152,7 +151,7 @@
             </main>
         </div>
     </div>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="<?php echo asset('js/aos.js') ?>"></script>
     <script>
         AOS.init();
     </script>

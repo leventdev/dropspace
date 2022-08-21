@@ -8,14 +8,10 @@
     <title>Download | DropSpace</title>
 
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-    <link rel="stylesheet" href="<?php
-
-                                    use App\Http\Controllers\FileController;
-                                    use NunoMaduro\Collision\Adapters\Phpunit\Style;
-
-                                    echo asset('css/app.css') ?>" type="text/css">
+    <link rel="stylesheet" href="<?php echo asset('css/aos.css') ?>" />
+    <link rel="stylesheet" href="<?php echo asset('css/app.css') ?>" type="text/css">
     <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="<?php echo asset('js/ajax.js') ?>"></script>
 
 
     <!-- Primary Meta Tags -->
@@ -589,7 +585,7 @@
             </main>
         </div>
     </div>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="<?php echo asset('js/aos.js') ?>"></script>
     <script>
         AOS.init();
     </script>

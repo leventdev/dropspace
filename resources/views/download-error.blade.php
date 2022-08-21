@@ -59,7 +59,7 @@
             </main>
         </div>
     </div>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="<?php echo asset('js/aos.js') ?>"></script>
     <script>
         AOS.init();
     </script>
