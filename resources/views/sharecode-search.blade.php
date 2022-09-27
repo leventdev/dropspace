@@ -7,7 +7,7 @@
 
     <title>Search | DropSpace</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="<?php echo asset('css/aos.css') ?>" />
     <link rel="stylesheet" href="<?php echo asset('css/app.css') ?>" type="text/css">
 
     <!-- Primary Meta Tags -->

@@ -7,7 +7,7 @@
 
     <title>Upload | DropSpace</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="<?php echo asset('css/aos.css') ?>" />
     <link rel="stylesheet" href="<?php echo asset('css/app.css') ?>" type="text/css">
     <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}" />
 
@@ -126,7 +126,7 @@
                     <div class="sm:ml-6 self-center sm:border-l sm:border-gray-200 sm:pl-6">
                         <div>
                             <div class="mx-auto max-w-xl transform rounded-xl bg-gray-600 p-2 shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-                                <button type="button" id="buttonid" class="relative block min-w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <button type="button" id="upload-button" class="relative block min-w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     <svg id="upload-icon" xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
@@ -173,7 +173,7 @@
         forceChunkSize: true,
     });
 
-    r.assignBrowse(document.getElementById('buttonid'));
+    r.assignBrowse(document.getElementById('upload-button'));
     r.assignDrop(document.body);
 
     document.body.addEventListener('paste', function(e) {
@@ -187,7 +187,7 @@
     // If r has file added, start uploading
     r.on('fileAdded', function(file) {
         r.upload();
-        const btn = document.getElementById('buttonid');
+        const btn = document.getElementById('upload-button');
         btn.classList.add("button--loading");
         btn.innerText = "";
         document.getElementById('loader-big').style.display = "block";
@@ -209,7 +209,7 @@
 
     r.on('fileError', function(file, message) {
         Sentry.captureException(message);
-        const btn = document.getElementById('buttonid');
+        const btn = document.getElementById('upload-button');
         btn.classList.remove("button--loading");
         const obj = JSON.parse(message);
         if (message.includes('File size exceeds maximum file size.') || message.includes('Not enough space on server' || message.includes('Uploading requires you to be signed in'))) {
