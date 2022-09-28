@@ -183,7 +183,7 @@
         document.getElementById('upload-text').style.display = 'none';
 
         var file = fileInput.files[0];
-        var chunkSize = 1024 * 1024 * 5; // 5MB
+        var chunkSize = 1024 * 1024; // 1MB
         var fileSize = file.size;
         var chunks = Math.ceil(fileSize / chunkSize, chunkSize) - 1;
         var chunk = 0;
