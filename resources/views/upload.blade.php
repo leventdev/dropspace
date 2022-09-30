@@ -202,7 +202,7 @@
         var timestamp = Date.now();
 
         var dropid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '-' + file.name;
-        console.log('Uploadig ' + dropid);
+        console.log('Uploading ' + dropid);
 
         var groupOne = [];
         var groupTwo = [];
@@ -255,7 +255,6 @@
                 if (response.status == 200) {
                     processedChunks++;
                     groups.shift();
-                    console.log(groups);
                     var fileProgress = (processedChunks / chunks);
                     console.log(fileProgress);
                     if (fileProgress > 1) {
@@ -264,21 +263,25 @@
                     document.getElementById('loader-progress').style.width = fileProgress * 100 + '%';
                     document.getElementById('loader-progress').innerText = Math.ceil(fileProgress * 100) + "%";
                     document.getElementById('progress-message').innerText = "Uploading...";
-
+                    
                     if (Math.ceil(fileProgress * 100) == 100) {
                         setTimeout(function() {
-                            document.getElementById('loader-progress').classList.add("finished-animate");
-                            document.getElementById('progress-message').innerText = "Processing chunks...";
+                            /* document.getElementById('loader-progress').classList.add("finished-animate");
+                            document.getElementById('progress-message').innerText = "Processing chunks..."; */
                         })
                     }
                 } else {
+                    //Move failed chunk to the end of the array
+                    groups.push(groups.shift());
                     document.getElementById('progress-message').innerText = "A chunk failed to upload. Trying again...";
                 }
+                console.log(groups);
             }
         }))
 
         console.log('Finished uploading chunks');
-
+        document.getElementById('loader-progress').classList.add("finished-animate");
+        document.getElementById('progress-message').innerText = "Processing chunks...";
         const processForm = new FormData();
         processForm.append('fileName', file.name);
         processForm.append('totalChunks', chunks);
