@@ -44,6 +44,8 @@ A demo instance is available <a href="https://dropdemo.leventdev.com" target="_b
 | File storage in S3 buckets                                      | :white_check_mark: |
 | File upload from clipboard (Just press command/controll + V)    | :white_check_mark: |
 <!-- list features todo -->
+![](/public/mockups/chunker.png)
+> DropSpace now uses it's own chunker for concurrent file uploading. This allows for faster uploads, and more reliable uploads.
 
 ![](/public/mockups/upload-settings.png)
 
