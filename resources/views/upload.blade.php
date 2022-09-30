@@ -298,7 +298,7 @@
                 //identifier = JSON.parse(response.json()).result.identifier;
                 //window.location.href = "{{url('set-file-details')}}/" + identifier;
                 response.json().then(result => {
-                    //window.location.href = "{{url('set-file-details')}}/" + result.identifier;
+                    window.location.href = "{{url('set-file-details')}}/" + result.identifier;
                 })
             } else {
                 document.getElementById('progress-message').innerText = "Processing failed. Please try again.";
