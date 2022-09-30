@@ -117,7 +117,7 @@
         @endif
         <div class="max-w-max mx-auto">
             <main class="sm:flex">
-                <div data-aos="fade-right" class="md:shadow sm:shadow-none sm:bg-none rounded-lg md:bg-gradient-to-r md:from-indigo-500 md:to-blue-500 h-full">
+                <div data-aos="fade-right" id="logo_card" class="md:shadow sm:shadow-none sm:bg-none rounded-lg md:bg-gradient-to-r md:from-indigo-500 md:to-blue-500 h-full">
                     <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="p-5 h-26 w-96 object-contain">
                     <!--<p class="text-left text-sm font-medium md:text-white text-indigo-600 sm:text-sm pb-0 md:pl-5">From <img src="{{asset('dropspace-white.svg')}}" alt="DropSpace" class="pb-2 pr-2 h-8 object-contain inline-block"></p>-->
                 </div>
@@ -163,136 +163,20 @@
         AOS.init();
     </script>
 </body>
-
+<!-- Animation script -->
 <script>
-    ////When the user clicks on the upload button, open the file open prompt.
-    //document.getElementById('upload-button').onclick = function() {
-    //    document.getElementById('file-input').click();
-    //}
-//
-    ////When a file is selected. Start upload
-    //document.getElementById('file-input').onchange = async function() {
-    //    var fileInput = document.getElementById('file-input');
-    //    //calculate file size in MB
-    //    var fSize = fileInput.files[0].size / 1048576;
-    //    document.getElementById('file-input').disabled = true;
-    //    document.getElementById('loader-big').style.display = "block";
-    //    document.getElementById('progress-message').style.display = "block";
-    //    document.getElementById('upload-spinner').style.display = "block";
-    //    document.getElementById('upload-icon').style.display = 'none';
-    //    document.getElementById('upload-text').style.display = 'none';
-//
-    //    var file = fileInput.files[0];
-    //    var chunkSize = 1024 * 1024; // 1MB
-    //    var fileSize = file.size;
-    //    var chunks = Math.ceil(fileSize / chunkSize, chunkSize) - 1;
-    //    var chunk = 0;
-//
-    //    //Generate timestamp
-    //    var timestamp = Date.now();
-//
-    //    var dropid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '-' + file.name;
-    //    console.log('Uploadig ' + dropid);
-//
-//
-//
-//
-    //    var groupOne = [];
-    //    var groupTwo = [];
-    //    var groupThree = [];
-    //    var groupFour = [];
-    //    //Divide the chunks into 4 groups
-    //    for (var i = 0; i <= chunks; i++) {
-    //        if (i % 4 == 0) {
-    //            groupOne.push(i);
-    //        } else if (i % 4 == 1) {
-    //            groupTwo.push(i);
-    //        } else if (i % 4 == 2) {
-    //            groupThree.push(i);
-    //        } else if (i % 4 == 3) {
-    //            groupFour.push(i);
-    //        }
-    //    }
-//
-    //    console.log('Group 1: ' + groupOne);
-    //    console.log('Group 2: ' + groupTwo);
-    //    console.log('Group 3: ' + groupThree);
-    //    console.log('Group 4: ' + groupFour);
-//
-//
-//
-//
-    //    var statusToggle = false;
-    //    while (chunk <= chunks) {
-    //        var offset = chunk * chunkSize;
-    //        console.log('current chunk: ' + chunk);
-//
-    //        var currentChunk = file.slice(offset, offset + chunkSize);
-    //        const formData = new FormData();
-    //        formData.append('file', currentChunk);
-    //        formData.append('chunk', chunk);
-    //        formData.append('chunks', chunks);
-    //        formData.append('filename', file.name);
-    //        formData.append('filesize', fileSize);
-    //        formData.append('_token', '{{ csrf_token() }}');
-    //        formData.append('dropid', dropid);
-    //        //Update with the route for the first step post call
-    //        const Url = "{{{ route('uploadChunk') }}}";
-    //        const response = await fetch(Url, {
-    //            method: 'POST',
-    //            body: formData
-    //        });
-//
-    //        if (response.status == 200) {
-    //            chunk++;
-//
-    //            var fileProgress = (chunk / chunks);
-    //            console.log(fileProgress);
-    //            if (fileProgress > 1) {
-    //                fileProgress = 1;
-    //            }
-    //            document.getElementById('loader-progress').style.width = fileProgress * 100 + '%';
-    //            document.getElementById('loader-progress').innerText = Math.ceil(fileProgress * 100) + "%";
-//
-    //            if (Math.ceil(fileProgress * 100) == 100) {
-    //                setTimeout(function() {
-    //                    document.getElementById('loader-progress').classList.add("finished-animate");
-    //                    document.getElementById('progress-message').innerText = "Processing chunks...";
-    //                })
-    //            }
-    //        } else {
-    //            document.getElementById('progress-message').innerText = "Upload failed. Please try again.";
-    //        }
-    //    }
-//
-    //    const processForm = new FormData();
-    //    processForm.append('fileName', file.name);
-    //    processForm.append('totalChunks', chunks);
-    //    processForm.append('fileSize', fileSize);
-    //    processForm.append('dropid', dropid);
-    //    processForm.append('_token', '{{ csrf_token() }}');
-//
-    //    //Update with the route for the last step post call
-    //    fetch("{{{ route('processChunks') }}}", {
-    //        method: 'POST',
-    //        body: processForm
-    //    }).then(response => {
-    //        if (response.status == 200) {
-    //            //Redirect to settings page.
-    //            //console.log(response.json()['status']);
-    //            //
-    //            //identifier = JSON.parse(response.json()).result.identifier;
-    //            //window.location.href = "{{url('set-file-details')}}/" + identifier;
-    //            response.json().then(result => {
-    //                window.location.href = "{{url('set-file-details')}}/" + result.identifier;
-    //            })
-    //        } else {
-    //            document.getElementById('progress-message').innerText = "Processing failed. Please try again.";
-    //        }
-    //    })
-    //}
+    var angle = 0;
+    var logo_card = $('#logo_card');
+    var color1 = '#6366f1';
+    var color2 = '#3b82f6';
+  function changeAngle() {
+        angle = (angle + 5) % 360;
+        logo_card.css({
+            'background': '-webkit-linear-gradient(' + angle + 'deg,' + color1 + ', ' + color2 + ')',
+        });
+    }
+    setInterval(changeAngle, 100);
 </script>
-
 <!-- Concurrent uploading script -->
 <script>
     document.getElementById('upload-button').onclick = function() {
@@ -346,8 +230,9 @@
 
         const calls = await Promise.all(groups.map(async (groups) => {
             //For each element in groups
-            for (var i = 0; i < groups.length; i++) {
-                var chunk = groups[i];
+            //for (var i = 0; i < groups.length; i++) {
+            while(groups.length > 0) {
+                var chunk = groups[0];
                 var offset = chunk * chunkSize;
                 console.log('current chunk: ' + chunk);
 
@@ -369,6 +254,8 @@
 
                 if (response.status == 200) {
                     processedChunks++;
+                    groups.shift();
+                    console.log(groups);
                     var fileProgress = (processedChunks / chunks);
                     console.log(fileProgress);
                     if (fileProgress > 1) {
@@ -376,6 +263,7 @@
                     }
                     document.getElementById('loader-progress').style.width = fileProgress * 100 + '%';
                     document.getElementById('loader-progress').innerText = Math.ceil(fileProgress * 100) + "%";
+                    document.getElementById('progress-message').innerText = "Uploading...";
 
                     if (Math.ceil(fileProgress * 100) == 100) {
                         setTimeout(function() {
@@ -384,7 +272,7 @@
                         })
                     }
                 } else {
-                    document.getElementById('progress-message').innerText = "Upload failed. Please try again.";
+                    document.getElementById('progress-message').innerText = "A chunk failed to upload. Trying again...";
                 }
             }
         }))
@@ -410,7 +298,7 @@
                 //identifier = JSON.parse(response.json()).result.identifier;
                 //window.location.href = "{{url('set-file-details')}}/" + identifier;
                 response.json().then(result => {
-                    window.location.href = "{{url('set-file-details')}}/" + result.identifier;
+                    //window.location.href = "{{url('set-file-details')}}/" + result.identifier;
                 })
             } else {
                 document.getElementById('progress-message').innerText = "Processing failed. Please try again.";
