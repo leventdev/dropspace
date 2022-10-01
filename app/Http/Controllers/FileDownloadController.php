@@ -33,6 +33,7 @@ class FileDownloadController extends Controller
         $color2download = '#6366f1';
         $dateInDanger = false;
         $downloadInDanger = false;
+        $canExpire = false;
         if ($file->download_limit != 0) {
             $canExpire = true;
             $hasDownloadLimit = true;
