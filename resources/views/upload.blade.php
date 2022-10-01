@@ -205,7 +205,7 @@
         //Generate timestamp
         var timestamp = Date.now();
 
-        var dropid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '-' + file.name;
+        var dropid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '-' + fileName + '-' + Date.now();
         console.log('Uploading ' + dropid);
 
         var groupOne = [];
