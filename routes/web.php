@@ -14,8 +14,20 @@ use Illuminate\Support\Facades\Route;
 //Route to default page. Login page if not authenticated, upload page if authenticated or security not enabled.
 Route::get('/', 'App\Http\Controllers\LoginController@goToUpload')->name('upload');
 
+
+/* New routes for DropSpace Chunker */
+//Route for uploading the chunks
+Route::post('/chunker/upload/chunks', 'App\Http\Controllers\FileUploadController@uploadChunk')->name('uploadChunk');
+//Route for processing the chunker
+Route::post('/chunker/upload/process', 'App\Http\Controllers\FileUploadController@processChunks')->name('processChunks');
+
+
+
 //Route for uploading chunks of files.
-Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks');
+//Route::post('/upload-chunks', 'App\Http\Controllers\FileUploadController@uploadChunks');
+//This route was used by Resumable.js
+//Since implementing DropSpace Chunker, it is no longer used.
+
 //Route to updating the expiry of a file
 Route::post('/update-expiry', 'App\Http\Controllers\FileDownloadController@updateExpiry');
 //Route to uploading a file (Not the view, the actual file upload)

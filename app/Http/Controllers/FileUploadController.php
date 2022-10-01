@@ -15,49 +15,65 @@ use Illuminate\Support\Facades\Auth;
 class FileUploadController extends Controller
 {
     //
+    /**
+     * Rewrite of uploadChunks() function to be compatible with the DropSpace Chunker
+     * DropSpace Chunker is my self-made replacement of Resumable.js
+     * 
+     * DropSpace Chunker uses two POST calls to upload a file.
+     * The first post call uploads the chunks of the file.
+     * 
+     * The second post call happens after the chunker uploaded all the chunks.
+     * This post calls for the server to process the chunks. Combine them into a single file, and do any post-processing.
+     * 
+     * Parameters of the first post call:
+     * 'file' - The chunk of the file
+     * 'chunk' - The current chunk number
+     * 'chunks' - The total number of chunks
+     * 'filename' - The client-side filename
+     * 'filesize' - The client-side filesize
+     * '_token' - The CSRF token. Authorized by the middleware
+     * 
+     * 'dropid' - Explained below
+     * DropID replaces the 'resumableIdentifier' used by Resumable.js
+     * DropID's are a random, client side generated, pseudo-random identifiers built up from a a combination of the client-side filename, the current timestamp and a random string.
+     * You can use the below code to generate a DropID (JavaScript):
+     * var DropID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + '-' + fileName + '-' + Date.now();
+     * 
+     * 
+     * Parameters of the second post call:
+     * 'fileName' - The client-side filename
+     * 'totalChunks' - The total number of chunks
+     * 'fileSize' - The client-side filesize
+     * '_token' - The CSRF token. Authorized by the middleware
+     * 'dropid' - Explained above, in the first call.
+     */
+
 
     /**
-     * Welp..... This is the most important function in DropSpace.
-     * This handles the file uploading.
+     * Comparison of the two chunkers, and their back-end implementation.
+     *
+     * Resumable.js:
+     * -------------
+     * Resumable.js has a single POST call to upload a file.
+     * Once the chunk being uploaded, and the total amount of chunks equals. The server will process the chunks.
+     * Resumable.js is written by 23, and hasn't been maintained in a while. (Last commit over a year ago as of 2022, Sept.)
+     * As of commit 2781f3b, the Resumable.js chunker implementation in DropSpace is broken.
+     * Investigating back-end reports. There is a problem with the uploaded file.
+     * I was unable to reproduce the issue on my local setup, but it seems to be a problem on production deployments.
      * 
-     * In detail:
-     * 1. Check if auth is enabled, and authorize the user.
-     * 2. Get important data from the request:
-     *  - $totalChunks: The total number of chunks the file is broken into.
-     *  - $chunkNumber: The number of the chunk that is being processed.
-     *  - $resumableIdentifier: The identifier of the file assigned by Resumablejs.
-     *  - $clientFilename: The name of the file on the client.
      * 
-     * 3. Check if there is a maximum file limit set. If there is, check if the file is too large.
-     * 4. Check if there is enough space on the server to store the file.
-     * 
-     *    Here we come to a the branch that handles file uploads with one chunk (When $totalChunks = 1)
-     *    5. Create new File (model) and set it's details.
-     *    6. Store the file depending on the storage driver.
-     *    7. Save the file to the database.
-     *    8. Return the file's ID.
-     * 
-     *    Here we come to the other branch that handles file uploads with multiple chunks (When $totalChunks > 1)
-     *    5. Save chunk to storage.
-     *    6. Check if $totalChunks == $chunkNumber. If so, create new File (model) and set it's details.
-     *    7. Generate an ID for the file.
-     *    7. Assemble the file from the chunks.
-     *    8. Store the file depending on the storage driver.
-     *    9. Save the file to the database.
-     *    10. Return the file's ID.
-     *    
-     * 
-     * @return The response is a JSON object, containing the following:
-     * - success: true/false
-     * - identifier: The file identifier of the file that was uploaded
-     * - chunkNumber: The chunk number of the chunk that was uploaded
-     * - totalChunks: The total number of chunks of the file that was uploaded
-     * 
+     * DropSpace Chunker:
+     * ------------------
+     * The DropSpace Chunker is my self-made replacement of Resumable.js
+     * DropSpace Chunker uses two POST calls to upload a file.
+     * The first post call uploads the chunks of the file.
+     * After the chunker uploaded all the chunks, it sends a second post call to the server.
+     * This post calls for the server to process the chunks. Combine them into a single file, and do any post-processing.
      */
-    public function uploadChunks()
+
+    public function uploadChunk()
     {
-        //This is gonna be a blast to write
-        //Check if auth is required
+        //Auth
         if (config('dropspace.ds_security_enabled') == true) {
             //Check if the user is logged in
             if (Auth::check()) {
@@ -67,164 +83,136 @@ class FileUploadController extends Controller
             }
         }
 
-        $totalChunks = request()->resumableTotalChunks;
-        $chunkNumber = request()->resumableChunkNumber;
-        $resumableIdentifier = request()->resumableIdentifier;
-        $clientFilename = request()->resumableFilename;
-
+        //Preprocessing
         if (config('dropspace.ds_max_file_size') != 0) {
             Log::info('Max file size is set to: ' . $this->byteConvert(config('dropspace.ds_max_file_size')));
-            if (request()->resumableTotalSize > config('dropspace.ds_max_file_size')) {
+            if (request()->filesize > config('dropspace.ds_max_file_size')) {
                 $maxServerFileSize = $this->byteConvert(config('dropspace.ds_max_file_size'));
                 Log::info('File is larger than the max allowed file size');
                 return response()->json(['error' => 'File size exceeds maximum file size. Max file size: ' . $maxServerFileSize], 400);
             }
         }
-        //Check available space on server
+
         if (config("dropspace.ds_storage_type") == 'local') {
             $free_space = disk_free_space(storage_path('app/'));
-            if ($free_space < request()->resumableTotalSize) {
+            if ($free_space < request()->filesize) {
                 Log::info('Not enough space on server');
                 Log::info('Free space on server: ' . $free_space);
-                Log::info('Total size of chunks: ' . request()->resumableTotalSize);
+                Log::info('Total size of chunks: ' . request()->filesize);
                 return response()->json(['error' => 'Not enough space on server'], 400);
             }
         }
 
-        if ($totalChunks == 1) {
-            //Save file to storage and database
-            Log::info('Received 1 chunk long file. Saving file.');
-            $file = new File;
-            $file->name = $clientFilename;
-            $file->extension = pathinfo($clientFilename, PATHINFO_EXTENSION);
-            $file->size = request()->resumableTotalSize;
-            if (request()->hasHeader('CF-Connecting-IP')) {
-                //The IP adress of the uploader is saved in the database, when the application is set up with Cloudflare, this IP adress is changed to Cloudflare's IP adress, but the IP adress of the client is passed through in a header, that's called 'CF-Connecting-IP'
-                $file->uploader_ip = request()->header('CF-Connecting-IP');
-            } else {
-                //If the application is not set up with Cloudflare, getting the IP adress of the client is grabbed straight from the request
-                $file->uploader_ip = request()->ip();
-            }
-            $file->file_identifier = Str::random(12);
-            while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
-                $file->file_identifier = Str::random(12);
-            }
-            Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
-            if (config('dropspace.ds_storage_type') == 's3') {
-                Log::info('Uploading file to S3');
-                //Updated using streams
-                Storage::putFileAs('dropspace/temp/', request()->file('file'), $file->file_identifier . '.' . $file->extension);
-                $stream = Storage::disk('local')->readStream('dropspace/temp/' . $file->file_identifier . '.' . $file->extension);
-                Storage::disk('s3')->put('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension, $stream);
-                Storage::delete('dropspace/temp/' . $file->file_identifier . '.' . $file->extension);
-                //End using streams
-                Log::info('Uploaded file to S3');
-            } else {
-                Log::info('Moving file to local storage');
-                Storage::putFileAs('dropspace/uploads/', request()->file('file'), $file->file_identifier . '.' . $file->extension);
-                Log::info('Moved file to local storage');
-            }
-            $file->path = $file->file_identifier . '.' . $file->extension;
-            Log::info('Saved file to storage. Saving file [' . $file->file_identifier . '] to database.');
-            $file->save();
-            Log::info('Saved file to database. Sending response.');
-            try {
-                //This post call updates the number of total files uploaded to all DropSpace instances. This number is going to be used on the GitHub page of DropSpace.
-                //Unless you have to disable this, we appreciate if you don't.
-                Http::timeout(5)->post('https://leventdev.me/api/dropspace/file-uploaded');
-            } catch (Exception $e) {
-                Log::info('Could not update uploaded files');
-                Log::info('This isn\'t a big deal, but we like to see how many people use DropSpace, so please report this in an issue on GitHub (leventdev/dropspace)');
-                Log::info('Error: ' . $e->getMessage());
-            }
-            return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
-        }
-        //If this is the first chunk, create a new file
-        //Save file to storage
-        Log::info('Received chunk [' . $chunkNumber . '] of [' . $totalChunks . '] for file [' . $resumableIdentifier . ']. Saving chunk.');
-        Storage::putFileAs('dropspace/chunks/' . $resumableIdentifier, request()->file('file'), $chunkNumber . '-' . $resumableIdentifier);
+        //Chunk saving
+        $chunkNumber = request()->chunk;
+        $totalChunks = request()->chunks;
+        $dropid = request()->dropid;
+        Log::info('Received chunk [' . $chunkNumber . '] of [' . $totalChunks . '] for file [' . $dropid . ']. Saving chunk.');
+        Storage::putFileAs('dropspace/chunks/' . $dropid, request()->file('file'), $chunkNumber . '.part');
         //Get file size of the chunk we just received
         $chunkSize = request()->file('file')->getSize();
         //Get the file size of the chunk we just saved to storage
-        $chunkSizeOnStorage = Storage::size('dropspace/chunks/' . $resumableIdentifier . '/' . $chunkNumber . '-' . $resumableIdentifier);
-        Log::info('['.$chunkNumber.'] Received chunk size: ' . $chunkSize . ' bytes. Saved chunk size: ' . $chunkSizeOnStorage . ' bytes');
-        //If the chunk number is the same as the total chunks, combine the chunks and save the file
-        if ($chunkNumber == $totalChunks) {
-            //Create new file
-            Log::info('Received last chunk of [' . $totalChunks . '] for file [' . $resumableIdentifier . ']. Generating database entry.');
-            $file = new File;
-            $file->name = $clientFilename;
-            //get extension from clientFilename
-            $file->extension = pathinfo($clientFilename, PATHINFO_EXTENSION);
-            $file->size = request()->resumableTotalSize;
-            if (request()->hasHeader('CF-Connecting-IP')) {
-                //The IP adress of the uploader is saved in the database, when the application is set up with Cloudflare, this IP adress is changed to Cloudflare's IP adress, but the IP adress of the client is passed through in a header, that's called 'CF-Connecting-IP'
-                $file->uploader_ip = request()->header('CF-Connecting-IP');
+        $chunkSizeOnStorage = Storage::size('dropspace/chunks/' . $dropid . '/' . $chunkNumber . '.part');
+        Log::info('[' . $chunkNumber . '] Received chunk size: ' . $chunkSize . ' bytes. Saved chunk size: ' . $chunkSizeOnStorage . ' bytes');
+    }
+
+
+    public function processChunks()
+    {
+        //Auth
+        if (config('dropspace.ds_security_enabled') == true) {
+            //Check if the user is logged in
+            if (Auth::check()) {
             } else {
-                //If the application is not set up with Cloudflare, getting the IP adress of the client is grabbed straight from the request
-                $file->uploader_ip = request()->ip();
+                //If the user is not logged in, we can't continue
+                return response()->json(['error' => 'Uploading requires you to be signed in. If this is an error, please contact the admin.'], 400);
             }
-
-            if (config('dropspace.ds_security_enabled')) {
-                //Save user's email to database
-                $file->uploader = Auth::user()->email;
-            }
-
-            //generate file_identifier
-            $file->file_identifier = Str::random(12);
-            while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
-                $file->file_identifier = Str::random(12);
-            }
-            //make empty file in storage
-            Log::info('Generated file data. Saving file [' . $file->file_identifier . '] to storage.');
-
-            Storage::put('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, '');
-            Log::info('Created temp file: ' . $resumableIdentifier . '-' . $clientFilename);
-            $fp = fopen('../storage/app/dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'w'); //opens file in append mode  
-            for ($i = 1; $i <= $totalChunks; $i++) {
-                //Get the chunk file
-                $chunkFile = Storage::get('dropspace/chunks/' . $resumableIdentifier . '/' . $i . '-' . $resumableIdentifier);
-                //Get client filename
-                $clientFilename = request()->resumableFilename;
-                //Storage::append('dropspace/chunks/'.$resumableIdentifier.'-'.$clientFilename, $chunkFile, null);
-                fwrite($fp, $chunkFile);
-                Log::info('Appended chunk: ' . $i . ' from file:' . 'dropspace/chunks/' . $resumableIdentifier . '/' . $i . '-' . $resumableIdentifier);
-                //Delete the chunk file
-                //Storage::delete('dropspace/chunks/'.$resumableIdentifier.'/'.$i.'-'.$resumableIdentifier);
-            }
-            fclose($fp);
-            Log::info('Finished appending chunks to file: ' . $resumableIdentifier . '-' . $clientFilename);
-            Storage::deleteDirectory('dropspace/chunks/' . $resumableIdentifier);
-            Log::info('Deleted chunks directory: dropspace/chunks/' . $resumableIdentifier);
-            if (config('dropspace.ds_storage_type') == 's3') {
-                Log::info('Uploading file to S3');
-                //Updated using streams
-                $stream = Storage::disk('local')->readStream('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename);
-                Storage::disk('s3')->put('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension, $stream);
-                Storage::delete('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename);
-                //End using streams
-                Log::info('Uploaded file to S3');
-            } else {
-                Log::info('Moving file to local storage');
-                Storage::move('dropspace/temp/' . $resumableIdentifier . '-' . $clientFilename, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
-                Log::info('Moved file to local storage');
-            }
-            $file->path = $file->file_identifier . '.' . $file->extension;
-            $file->save();
-            Log::info('Saved file to database');
-            Log::info('Finished uploading file ' . $file->file_identifier . '.' . $file->extension);
-            try {
-                //This post call updates the number of total files uploaded to all DropSpace instances. This number is going to be used on the GitHub page of DropSpace.
-                //Unless you have to disable this, we appreciate if you don't.
-                Http::timeout(5)->post('https://leventdev.com/api/dropspace/file-uploaded');
-            } catch (Exception $e) {
-                Log::info('Could not update uploaded files');
-                Log::info('This isn\'t a big deal, but we like to see how many people use DropSpace, so please report this in an issue on GitHub (leventdev/dropspace)');
-                Log::info('Error: ' . $e->getMessage());
-            }
-            return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
         }
-        return response()->json(['success' => true, 'chunkNumber' => $chunkNumber, 'totalChunks' => $totalChunks]);
+
+        //Preprocessing
+        if (config('dropspace.ds_max_file_size') != 0) {
+            Log::info('Max file size is set to: ' . $this->byteConvert(config('dropspace.ds_max_file_size')));
+            if (request()->filesize > config('dropspace.ds_max_file_size')) {
+                $maxServerFileSize = $this->byteConvert(config('dropspace.ds_max_file_size'));
+                Log::info('File is larger than the max allowed file size');
+                return response()->json(['error' => 'File size exceeds maximum file size. Max file size: ' . $maxServerFileSize], 400);
+            }
+        }
+
+
+        
+        if (config("dropspace.ds_storage_type") == 'local') {
+            $free_space = disk_free_space(storage_path('app/'));
+            if ($free_space < request()->filesize) {
+                Log::info('Not enough space on server');
+                Log::info('Free space on server: ' . $free_space);
+                Log::info('Total size of chunks: ' . request()->filesize);
+                return response()->json(['error' => 'Not enough space on server'], 400);
+            }
+        }
+
+
+        $file = new File;
+        $file->name = request()->fileName;
+        //get extension from clientFilename
+        $file->extension = pathinfo(request()->fileName, PATHINFO_EXTENSION);
+        $file->size = request()->fileSize;
+        if (request()->hasHeader('CF-Connecting-IP')) {
+            //The IP adress of the uploader is saved in the database, when the application is set up with Cloudflare, this IP adress is changed to Cloudflare's IP adress, but the IP adress of the client is passed through in a header, that's called 'CF-Connecting-IP'
+            $file->uploader_ip = request()->header('CF-Connecting-IP');
+        } else {
+            //If the application is not set up with Cloudflare, getting the IP adress of the client is grabbed straight from the request
+            $file->uploader_ip = request()->ip();
+        }
+
+        if (config('dropspace.ds_security_enabled')) {
+            //Save user's email to database
+            $file->uploader = Auth::user()->email;
+        }
+
+        //generate file_identifier
+        $file->file_identifier = Str::random(12);
+        while (DB::table('files')->where('file_identifier', $file->file_identifier)->exists()) {
+            $file->file_identifier = Str::random(12);
+        }
+
+        Storage::makeDirectory('dropspace/uploads/temp');
+        $fp = fopen(Storage::path('dropspace/uploads/temp/' . request()->dropid), 'w'); //opens file in append mode
+        for ($i = 0;$i <= request()->totalChunks;$i++) {
+            $chunkFile = Storage::get('dropspace/chunks/' . request()->dropid . '/' . $i . '.part');
+            fwrite($fp, $chunkFile);
+            Log::info('Appended chunk: ' . $i . ' from file:' . 'dropspace/chunks/' . request()->dropid . '/' . $i . '.part');
+        }
+        Storage::deleteDirectory('dropspace/chunks/' . request()->dropid);
+        Log::info('Deleted chunks directory: dropspace/chunks/' . request()->dropid);
+
+        if (config('dropspace.ds_storage_type') == 's3') {
+            Log::info('Uploading file to S3');
+            //Updated using streams
+            $stream = Storage::disk('local')->readStream('dropspace/temp/' . request()->dropid);
+            Storage::disk('s3')->put('dropspace/uploads/' . $file->file_identifier . '.' . $file->extension, $stream);
+            Storage::delete('dropspace/uploads/temp/' . request()->dropid);
+            //End using streams
+            Log::info('Uploaded file to S3');
+        } else {
+            Log::info('Moving file to local storage');
+            Storage::move('dropspace/uploads/temp/' . request()->dropid, 'dropspace/uploads/' . $file->file_identifier . '.' . $file->extension);
+            Log::info('Moved file to local storage');
+        }
+        $file->path = $file->file_identifier . '.' . $file->extension;
+        $file->save();
+
+
+        try {
+            //This post call updates the number of total files uploaded to all DropSpace instances. This number is going to be used on the GitHub page of DropSpace.
+            //Unless you have to disable this, we appreciate if you don't.
+            Http::timeout(5)->post('https://leventdev.com/api/dropspace/file-uploaded');
+        } catch (Exception $e) {
+            Log::info('Could not update uploaded files');
+            Log::info('This isn\'t a big deal, but we like to see how many people use DropSpace, so please report this in an issue on GitHub (leventdev/dropspace)');
+            Log::info('Error: ' . $e->getMessage());
+        }
+        return response()->json(['success' => true, 'identifier' => $file->file_identifier]);
     }
 
     /**
