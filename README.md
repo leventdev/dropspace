@@ -45,6 +45,7 @@ A demo instance is available <a href="https://dropdemo.leventdev.com" target="_b
 | File upload from clipboard (Just press command/controll + V)    | :white_check_mark: |
 <!-- list features todo -->
 ----------
+# DropSpace Chunker
 ![](/public/mockups/chunker.png)
 > DropSpace now uses it's own chunker for concurrent file uploading. This allows for faster uploads, and more reliable uploads.  
 
@@ -52,8 +53,8 @@ A demo instance is available <a href="https://dropdemo.leventdev.com" target="_b
 ## How does it work?
 DropSpace Chunker works by splitting the file into chunks.  
 Let's take a 100MB file for example.
-The chunker would split that, to 100 chunks of 1MB each. This is to avoid hitting a payload limit (HTTP 413).
-Then instead of uploading all the chunks in its own thread (Which would probably trigged a rate limit), the chunker splits the chunks into four groups.  
+The chunker would split that, to 100 chunks of 1MB each. This is to avoid hitting a payload limit.
+Then instead of uploading all the chunks in its own thread, all at once (Which would probably trigger a rate limit), the chunker splits the chunks into four groups.  
 The groups would look like the following
 | Group 1 | Group 2 | Group 3 | Group 4 |
 | ------- | ------- | ------- | ------- |
@@ -65,10 +66,11 @@ The groups would look like the following
 | Chunk ... | Chunk ... | Chunk ... | Chunk ... |
 
 After we grouped all the chunks, we start uploading the chunks, by creating each group it's own thread.  
-This allows for faster uploads, and more reliable uploads, without hitting a rate, or payload limit.  
+This allows for faster, and more reliable uploads, without hitting a rate, or payload limit.  
 Below is a comparison of a chunker uploading each file after each other (sequential), and DropSpace Chunker uploading them concurrently.
-![](/public/mockups/concurrent-sequential.png)
+![](/public/mockups/concurrent-sequential.png)   
 
+----------
 ![](/public/mockups/upload-settings.png)
 
 ## Deployment
