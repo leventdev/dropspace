@@ -22,8 +22,8 @@
     <meta property="og:url" content="{{ secure_url('/')}}">
     <meta property="og:title" content="Download | DropSpace">
     <meta property="og:description" content="Download {{ $fileNameTag }} from DropSpace file share">
-    <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'mp4' || $fileExtension == 'jpeg') { ?>
-        <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'jpeg') { ?>
+    <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'mp4' || $fileExtension == 'jpeg' || $fileExtension == 'gif') { ?>
+        <?php if ($fileExtension == 'png' || $fileExtension == 'jpg' || $fileExtension == 'jpeg' || $fileExtension == 'gif') { ?>
             <meta property="og:image" content="{{$fileURL}}">
             <meta property="og:type" content="website">
             <meta property="twitter:card" content="summary_large_image">
@@ -630,7 +630,7 @@
                 file_id: "{{ $fileID }}",
                 _token: "{{ csrf_token() }}",
                 <?php if ($password_protected == true) { ?>
-                    <?php echo 'hash: "' . $hash . '"'; ?>
+                    <?php echo "hash: '" . $hash . "'"; ?>
                 <?php } ?>
             }
             $.post(Url, data, function(response) {
@@ -704,7 +704,7 @@
     var color2date = '{{ $color2date}}';
     //strart updateExpiry on page load
     window.onload = function() {
-        updateExpiry();
+        manualRefresh();
     };
 
     function downloadProcessing() {
@@ -754,7 +754,7 @@
             email: toemail,
             _token: "{{ csrf_token() }}",
             <?php if ($password_protected == true) { ?>
-                <?php echo 'hash: ' . $hash; ?>
+                <?php echo "hash: '" . $hash . "'"; ?>
             <?php } ?>
         }
         $.post(Url, data, function(data, status) {
