@@ -129,6 +129,9 @@
                                     <svg id="upload-icon" xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
+                                    <svg id="failed-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
                                     <svg id="success-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -169,7 +172,8 @@
     var logo_card = $('#logo_card');
     var color1 = '#6366f1';
     var color2 = '#3b82f6';
-  function changeAngle() {
+
+    function changeAngle() {
         angle = (angle + 5) % 360;
         logo_card.css({
             'background': '-webkit-linear-gradient(' + angle + 'deg,' + color1 + ', ' + color2 + ')',
@@ -227,11 +231,14 @@
 
 
         var processedChunks = 0;
+        var aborted = false;
 
         const calls = await Promise.all(groups.map(async (groups) => {
             //For each element in groups
             //for (var i = 0; i < groups.length; i++) {
-            while(groups.length > 0) {
+            var errorCount = 0;
+            var maxErrors = 10;
+            while (groups.length > 0) {
                 var chunk = groups[0];
                 var offset = chunk * chunkSize;
                 console.log('current chunk: ' + chunk);
@@ -263,22 +270,29 @@
                     document.getElementById('loader-progress').style.width = fileProgress * 100 + '%';
                     document.getElementById('loader-progress').innerText = Math.ceil(fileProgress * 100) + "%";
                     document.getElementById('progress-message').innerText = "Uploading...";
-                    
-                    if (Math.ceil(fileProgress * 100) == 100) {
-                        setTimeout(function() {
-                            /* document.getElementById('loader-progress').classList.add("finished-animate");
-                            document.getElementById('progress-message').innerText = "Processing chunks..."; */
-                        })
-                    }
                 } else {
                     //Move failed chunk to the end of the array
-                    groups.push(groups.shift());
-                    document.getElementById('progress-message').innerText = "A chunk failed to upload. Trying again...";
+                    if (errorCount == maxErrors) {
+                        console.log('Max errors reached');
+                        document.getElementById('progress-message').innerHTML = "Something went wrong while uploading all chunks.<br> Please refresh the page and try again.";
+                        aborted = true;
+                        groups.shift();
+                        document.getElementById('loader-big').style.display = "none";
+                        document.getElementById('upload-spinner').style.display = "none";
+                        document.getElementById('failed-icon').style.display = 'block';
+
+                    } else {
+                        groups.push(groups.shift());
+                        errorCount++;
+                    }
                 }
                 console.log(groups);
             }
         }))
 
+        if (aborted) {
+            return;
+        }
         console.log('Finished uploading chunks');
         document.getElementById('loader-progress').classList.add("finished-animate");
         document.getElementById('progress-message').innerText = "Processing chunks...";
@@ -296,10 +310,6 @@
         }).then(response => {
             if (response.status == 200) {
                 //Redirect to settings page.
-                //console.log(response.json()['status']);
-                //
-                //identifier = JSON.parse(response.json()).result.identifier;
-                //window.location.href = "{{url('set-file-details')}}/" + identifier;
                 response.json().then(result => {
                     window.location.href = "{{url('set-file-details')}}/" + result.identifier;
                 })
@@ -310,92 +320,5 @@
     }
 </script>
 <!-- End of script -->
-
-<script>
-    /*
-    document.getElementById('buttonid').addEventListener('click', function() {
-        document.getElementById('fileid').click();
-    });*/
-    /* 
-        var r = new Resumable({
-            target: "{{secure_url('upload-chunks')}}",
-            query: {
-                _token: '{{ csrf_token() }}'
-            },
-            simultaneousUploads: 3,
-            maxChunkRetries: 10,
-            chunkSize: 5000000,
-            forceChunkSize: true,
-        });
-
-        r.assignBrowse(document.getElementById('upload-button'));
-        r.assignDrop(document.body);
-
-        document.body.addEventListener('paste', function(e) {
-            var item = e.clipboardData.items[0];
-            if (item.kind === 'file') {
-                var file = item.getAsFile();
-                r.addFile(file);
-            }
-        })
-
-        // If r has file added, start uploading
-        r.on('fileAdded', function(file) {
-            r.upload();
-            const btn = document.getElementById('upload-button');
-            btn.classList.add("button--loading");
-            btn.innerText = "";
-            document.getElementById('loader-big').style.display = "block";
-            document.getElementById('progress-message').style.display = "block";
-            document.getElementById('upload-icon').style.display = 'none';
-        });
-
-        var identifier;
-
-        r.on('fileSuccess', function(file, message) {
-            console.log(message);
-            //redirect to Route::get('/set-file-details/{file_id}'
-            //Make identifier the 'identifier' from the message
-            //Read message as json
-
-            identifier = JSON.parse(message).identifier;
-            window.location.href = "{{url('set-file-details')}}/" + identifier;
-        });
-
-        r.on('fileError', function(file, message) {
-            Sentry.captureException(message);
-            const btn = document.getElementById('upload-button');
-            btn.classList.remove("button--loading");
-            const obj = JSON.parse(message);
-            if (message.includes('File size exceeds maximum file size.') || message.includes('Not enough space on server' || message.includes('Uploading requires you to be signed in'))) {
-                btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> ' + obj.error + ' </span>';
-            } else {
-                btn.innerHTML = '<span class="mt-2 block text-sm font-medium text-gray-50"> Error while uploading file. Please try again. </span>';
-            }
-            document.getElementById('loader-big').style.display = "none";
-        });
-
-        var statusToggle = false;
-
-        r.on('fileProgress', (file, ratio) => {
-            document.getElementById('loader-progress').style.width = (file.progress() * 100) + "%";
-            //Get file progress with 0 decimal rounded up
-
-            document.getElementById('loader-progress').innerText = Math.ceil(file.progress() * 100) + "%";
-            //If 100% then add class
-            if (Math.ceil(file.progress() * 100) == 100) {
-                //Wait a second then add class finished-animte
-                setTimeout(function() {
-                    document.getElementById('loader-progress').classList.add("finished-animate");
-                    if (statusToggle == false) {
-                        document.getElementById('progress-message').innerText = "Assembling chunks...";
-                        statusToggle = true;
-                    } else {
-
-                    }
-                }, 350);
-            }
-        }); */
-</script>
 
 </html>
