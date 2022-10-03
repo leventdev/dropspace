@@ -33,7 +33,7 @@ class DeleteExpiredFiles extends Command
     public function handle()
     {
         Log::info('Starting removal of expired files.');
-        $files = File::all()->where('deleted_for_expiry', 0);
+        $files = File::all()->where(['deleted_for_expiry', 0]);
         foreach ($files as $file) {
             if ($file->expiry_date != null) {
                 $date = Carbon::parse($file->expiry_date);
