@@ -242,6 +242,9 @@
             document.getElementById('progress-message').style.display = "block";
             document.getElementById('progress-message').innerHTML = 'File size is too big, maximum file size is 20MB.';
             return;
+        }else{
+            document.getElementById('progress-message').style.display = "none";
+            document.getElementById('progress-message').innerHTML = 'Uploading...';
         }
 
         var fSize = fileInput.files[0].size / 1048576;
