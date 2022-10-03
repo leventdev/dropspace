@@ -174,4 +174,4 @@ If you discover a security vulnerability within DropSpace, please make a pull re
 
 ## License
 
-The DropSpace is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The DropSpace project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
