@@ -21,8 +21,6 @@ DropSpace is built using [Laravel](https://laravel.com).
 A demo instance is available <a href="https://dropdemo.leventdev.com" target="_blank">here!</a>
 
 
-> DropSpace is no longer being developed for **new** features, but **will be maintained** for bugs and security issues.
-
 ![](/public/mockups/download.png)
 
 # Features
